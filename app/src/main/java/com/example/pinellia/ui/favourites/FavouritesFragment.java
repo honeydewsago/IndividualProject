@@ -1,4 +1,4 @@
-package com.example.pinellia.ui.notifications;
+package com.example.pinellia.ui.favourites;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,22 +10,23 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.pinellia.databinding.FragmentNotificationsBinding;
+import com.example.pinellia.databinding.FragmentFavouritesBinding;
+import com.example.pinellia.ui.self_care.SelfCareViewModel;
 
-public class NotificationsFragment extends Fragment {
+public class FavouritesFragment extends Fragment {
 
-    private FragmentNotificationsBinding binding;
+    private FragmentFavouritesBinding binding;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        NotificationsViewModel notificationsViewModel =
-                new ViewModelProvider(this).get(NotificationsViewModel.class);
+        FavouritesViewModel favouritesViewModel =
+                new ViewModelProvider(this).get(FavouritesViewModel.class);
 
-        binding = FragmentNotificationsBinding.inflate(inflater, container, false);
+        binding = FragmentFavouritesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
         final TextView textView = binding.textNotifications;
-        notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        favouritesViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
         return root;
     }
 

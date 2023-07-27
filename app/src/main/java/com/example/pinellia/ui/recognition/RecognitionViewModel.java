@@ -1,16 +1,16 @@
-package com.example.pinellia.ui.notifications;
+package com.example.pinellia.ui.recognition;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class NotificationsViewModel extends ViewModel {
+public class RecognitionViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public NotificationsViewModel() {
+    public RecognitionViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is notifications fragment");
+        mText.setValue("This is recognition fragment");
     }
 
     public LiveData<String> getText() {

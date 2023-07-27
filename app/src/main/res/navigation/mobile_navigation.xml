@@ -12,14 +12,20 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.pinellia.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_recognition"
+        android:name="com.example.pinellia.ui.recognition.RecognitionFragment"
+        android:label="@string/title_recognition"
+        tools:layout="@layout/fragment_recognition" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.pinellia.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_selfcare"
+        android:name="com.example.pinellia.ui.self_care.SelfCareFragment"
+        android:label="@string/title_selfcare"
+        tools:layout="@layout/fragment_self_care" />
+
+    <fragment
+        android:id="@+id/navigation_favourites"
+        android:name="com.example.pinellia.ui.favourites.FavouritesFragment"
+        android:label="@string/title_favourites"
+        tools:layout="@layout/fragment_favourites" />
 </navigation>
