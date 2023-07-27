@@ -13,12 +13,12 @@
 
     <item
         android:id="@+id/navigation_selfcare"
-        android:icon="@drawable/star_black_24"
+        android:icon="@drawable/self_improvement_black_24"
         android:title="@string/title_selfcare" />
 
     <item
         android:id="@+id/navigation_favourites"
-        android:icon="@drawable/self_improvement_black_24"
+        android:icon="@drawable/star_black_24"
         android:title="@string/title_favourites" />
 
 </menu>
