@@ -1,5 +1,6 @@
 package com.example.pinellia.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.pinellia.HerbDetails;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentHomeBinding;
 import com.example.pinellia.model.Herb;
@@ -46,6 +48,18 @@ public class HomeFragment extends Fragment {
             herbList.clear();
             herbList.addAll(herbs);
             herbAdapter.notifyDataSetChanged();
+        });
+
+        herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Herb herb) {
+                // Handle click event for each herb item
+                // Start HerbDetails activity and pass the clicked herb data to it
+                Intent intent = new Intent(getActivity(), HerbDetails.class);
+                intent.putExtra("herbName", herb.getName());
+                // Add other relevant data about the herb as extras to the intent if needed
+                startActivity(intent);
+            }
         });
 
         homeViewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
