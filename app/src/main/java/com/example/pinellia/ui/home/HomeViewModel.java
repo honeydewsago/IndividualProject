@@ -14,6 +14,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class HomeViewModel extends ViewModel {
@@ -41,6 +43,15 @@ public class HomeViewModel extends ViewModel {
                     Herb herb = snapshot.getValue(Herb.class);
                     herbList.add(herb);
                 }
+
+                // Sort the herbList by name in ascending order (A-Z)
+                Collections.sort(herbList, new Comparator<Herb>() {
+                    @Override
+                    public int compare(Herb herb1, Herb herb2) {
+                        return herb1.getName().compareToIgnoreCase(herb2.getName());
+                    }
+                });
+
                 herbLiveData.setValue(herbList);
             }
 
