@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "672014006937",
+    "project_id": "pinellia-66b18",
+    "storage_bucket": "pinellia-66b18.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:672014006937:android:3340f47ed8c24a16509608",
+        "android_client_info": {
+          "package_name": "com.example.pinellia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "672014006937-1cfharuumv6kfspplqi5ike6v165ffpa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC9RgIrcp8KdgBv37tEdKnnv2Rg87zywKY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "672014006937-1cfharuumv6kfspplqi5ike6v165ffpa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
