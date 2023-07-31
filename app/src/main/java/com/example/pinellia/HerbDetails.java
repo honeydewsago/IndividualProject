@@ -7,7 +7,11 @@ import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pinellia.model.Herb;
+
 public class HerbDetails extends AppCompatActivity {
+
+    private Herb mHerb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,9 +22,22 @@ public class HerbDetails extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (intent != null) {
-            String herbName = intent.getStringExtra("herbId");
+            mHerb = (Herb) getIntent().getSerializableExtra("herb");
 
-            Toast.makeText(this, ""+herbName, Toast.LENGTH_SHORT).show();
+            // Update the action bar title to the herb name
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setTitle(mHerb.getName());
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
+
+            Toast.makeText(this, ""+mHerb.getName(), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        // Handle the back button click in the action bar
+        onBackPressed();
+        return true;
     }
 }
