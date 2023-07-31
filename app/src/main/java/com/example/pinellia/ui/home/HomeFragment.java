@@ -5,27 +5,54 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentHomeBinding;
+import com.example.pinellia.model.Herb;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    private HerbAdapter herbAdapter;
+    private List<Herb> herbList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
+        HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textHome;
-        homeViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        binding.recyclerViewHerbs.setLayoutManager(new LinearLayoutManager(getActivity()));
+        herbList = new ArrayList<>();
+        herbAdapter = new HerbAdapter(herbList);
+        binding.recyclerViewHerbs.setAdapter(herbAdapter);
+
+        homeViewModel.getHerbData().observe(getViewLifecycleOwner(), herbs -> {
+            // Update the RecyclerView when data changes
+            herbList.clear();
+            herbList.addAll(herbs);
+            herbAdapter.notifyDataSetChanged();
+        });
+
+        homeViewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
+            // Handle the error message
+            Toast.makeText(getActivity(), "Failed to retrieve data: " + errorMessage, Toast.LENGTH_SHORT).show();
+        });
+
         return root;
     }
 
