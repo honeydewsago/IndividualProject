@@ -1,6 +1,8 @@
 package com.example.pinellia.model;
 
-public class Herb {
+import java.io.Serializable;
+
+public class Herb implements Serializable {
 
     private String id;
     private String name;

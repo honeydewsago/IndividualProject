@@ -56,7 +56,7 @@ public class HomeFragment extends Fragment {
             public void onItemClick(Herb herb) {
                 // Launch HerbDetails activity and pass the clicked herb data
                 Intent intent = new Intent(getActivity(), HerbDetails.class);
-                intent.putExtra("herbId", herb.getId());
+                intent.putExtra("herb", herb);
                 startActivity(intent);
             }
         });
