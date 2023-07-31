@@ -2,6 +2,7 @@ package com.example.pinellia.model;
 
 public class Herb {
 
+    private String id;
     private String name;
     private String nameScientific;
     private String nameCN;
@@ -24,7 +25,8 @@ public class Herb {
         // Required empty constructor
     }
 
-    public Herb(String name, String nameScientific, String nameCN, String namePinyin, String property, String meridianTropism, String flavor, String toxicology, String storage, String characteristics, String placeOfOrigin, String medicinePart, String method, String effect, String usage, String dosage, String prohibition) {
+    public Herb(String id, String name, String nameScientific, String nameCN, String namePinyin, String property, String meridianTropism, String flavor, String toxicology, String storage, String characteristics, String placeOfOrigin, String medicinePart, String method, String effect, String usage, String dosage, String prohibition) {
+        this.id = id;
         this.name = name;
         this.nameScientific = nameScientific;
         this.nameCN = nameCN;
@@ -42,6 +44,10 @@ public class Herb {
         this.usage = usage;
         this.dosage = dosage;
         this.prohibition = prohibition;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getName() {

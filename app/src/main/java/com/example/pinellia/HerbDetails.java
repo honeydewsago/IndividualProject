@@ -18,7 +18,7 @@ public class HerbDetails extends AppCompatActivity {
         Intent intent = getIntent();
 
         if (intent != null) {
-            String herbName = intent.getStringExtra("herbName");
+            String herbName = intent.getStringExtra("herbId");
 
             Toast.makeText(this, ""+herbName, Toast.LENGTH_SHORT).show();
         }

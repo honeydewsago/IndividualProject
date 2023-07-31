@@ -50,14 +50,13 @@ public class HomeFragment extends Fragment {
             herbAdapter.notifyDataSetChanged();
         });
 
+        // Handle click event for each herb item
         herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Herb herb) {
-                // Handle click event for each herb item
-                // Start HerbDetails activity and pass the clicked herb data to it
+                // Launch HerbDetails activity and pass the clicked herb data
                 Intent intent = new Intent(getActivity(), HerbDetails.class);
-                intent.putExtra("herbName", herb.getName());
-                // Add other relevant data about the herb as extras to the intent if needed
+                intent.putExtra("herbId", herb.getId());
                 startActivity(intent);
             }
         });

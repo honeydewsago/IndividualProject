@@ -63,6 +63,7 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
                 @Override
                 public void onClick(View view) {
                     int position = getAdapterPosition();
+
                     if (position != RecyclerView.NO_POSITION) {
                         Herb clickedHerb = herbList.get(position);
 
@@ -80,16 +81,3 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
         }
     }
 }
-
-//            binding.getRoot().setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    Herb currentHerb = herbList.get(getAdapterPosition());
-//
-//                    Intent i = new Intent(mActivity, HerbDetails.class);
-//
-//                    i.putExtra("currentHerbID", currentHerb.getName());
-//
-//                    mActivity.startActivity(i);
-//                }
-//            });
