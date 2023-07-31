@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,7 @@ public class HomeFragment extends Fragment {
         View root = binding.getRoot();
 
         binding.recyclerViewHerbs.setLayoutManager(new LinearLayoutManager(getActivity()));
+
         herbList = new ArrayList<>();
         herbAdapter = new HerbAdapter(herbList);
         binding.recyclerViewHerbs.setAdapter(herbAdapter);
@@ -66,7 +68,37 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getActivity(), "Failed to retrieve data: " + errorMessage, Toast.LENGTH_SHORT).show();
         });
 
+        // Set up the search bar
+        SearchView searchView = binding.searchView;
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Filter the herb list based on the search query
+                filterHerbs(newText);
+                return true;
+            }
+        });
+
         return root;
+    }
+
+    // Helper method to filter the herb list based on the search query
+    private void filterHerbs(String query) {
+        List<Herb> filteredHerbs = new ArrayList<>();
+
+        for (Herb herb : herbList) {
+            if (herb.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredHerbs.add(herb);
+            }
+        }
+
+        // Update the adapter with the filtered list
+        herbAdapter.setFilter(filteredHerbs);
     }
 
     @Override
