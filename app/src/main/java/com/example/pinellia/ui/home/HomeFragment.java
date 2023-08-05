@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -18,29 +17,27 @@ import com.example.pinellia.HerbDetails;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentHomeBinding;
 import com.example.pinellia.model.Herb;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private HerbAdapter herbAdapter;
     private List<Herb> herbList;
+    private HomeViewModel homeViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        HomeViewModel homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        binding.recyclerViewHerbs.setLayoutManager(new LinearLayoutManager(getActivity()));
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
+        binding.recyclerViewHerbs.setLayoutManager(new LinearLayoutManager(getActivity()));
         herbList = new ArrayList<>();
         herbAdapter = new HerbAdapter(herbList);
         binding.recyclerViewHerbs.setAdapter(herbAdapter);
@@ -69,41 +66,47 @@ public class HomeFragment extends Fragment {
         });
 
         // Set up the search bar
-        SearchView searchView = binding.searchView;
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
+        setHasOptionsMenu(true); // Add this line to indicate that the fragment has its own menu items.
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                // Filter the herb list based on the search query
-                filterHerbs(newText);
-                return true;
-            }
-        });
+
+        // Set up the search bar
+//        SearchView searchView = binding.searchView;
+//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                // Filter the herb list based on the search query
+//                filterHerbs(newText);
+//                return true;
+//            }
+//        });
 
         return root;
     }
 
     // Helper method to filter the herb list based on the search query
-    private void filterHerbs(String query) {
-        List<Herb> filteredHerbs = new ArrayList<>();
-
-        for (Herb herb : herbList) {
-            if (herb.getName().toLowerCase().contains(query.toLowerCase())) {
-                filteredHerbs.add(herb);
-            }
-        }
-
-        // Update the adapter with the filtered list
-        herbAdapter.setFilter(filteredHerbs);
-    }
+//    private void filterHerbs(String query) {
+//        List<Herb> filteredHerbs = new ArrayList<>();
+//
+//        for (Herb herb : herbList) {
+//            if (herb.getName().toLowerCase().contains(query.toLowerCase())) {
+//                filteredHerbs.add(herb);
+//            }
+//        }
+//
+//        // Update the adapter with the filtered list
+//        herbAdapter.setFilter(filteredHerbs);
+//    }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+        binding.recyclerViewHerbs.setAdapter(null);
+        herbAdapter = null;
     }
+
 }

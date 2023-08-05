@@ -52,10 +52,10 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
         this.itemClickListener = itemClickListener;
     }
 
-    public void setFilter(List<Herb> filteredHerbs) {
-        herbList = filteredHerbs;
-        notifyDataSetChanged();
-    }
+//    public void setFilter(List<Herb> filteredHerbs) {
+//        herbList = filteredHerbs;
+//        notifyDataSetChanged();
+//    }
 
     public class HerbViewHolder extends RecyclerView.ViewHolder {
         private final CardviewHerbItemBinding binding;

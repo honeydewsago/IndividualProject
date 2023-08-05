@@ -29,10 +29,14 @@ public class HomeViewModel extends ViewModel {
             errorMessageLiveData = new MutableLiveData<>();
             loadHerbsFromFirebase();
         }
+        else {
+            reloadHerbsFromFirebase();
+        }
         return herbLiveData;
     }
 
     private void loadHerbsFromFirebase() {
+        // Fetch herbs from Firebase and update herbLiveData
         List<Herb> herbList = new ArrayList<>();
 
         FirebaseDatabase.getInstance().getReference("herbs").addListenerForSingleValueEvent(new ValueEventListener() {
@@ -61,6 +65,41 @@ public class HomeViewModel extends ViewModel {
                 errorMessageLiveData.setValue(databaseError.getMessage());
             }
         });
+    }
+
+    private void reloadHerbsFromFirebase() {
+        // Fetch herbs from Firebase and update herbLiveData
+        // same implementation as loadHerbsFromFirebase() but without clearing the list to keep the existing data in the list and update it with new data
+        FirebaseDatabase.getInstance().getReference("herbs").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Herb> herbList = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Herb herb = snapshot.getValue(Herb.class);
+                    herbList.add(herb);
+                }
+
+                // Sort the herbList by name in ascending order (A-Z)
+                Collections.sort(herbList, new Comparator<Herb>() {
+                    @Override
+                    public int compare(Herb herb1, Herb herb2) {
+                        return herb1.getName().compareToIgnoreCase(herb2.getName());
+                    }
+                });
+
+                herbLiveData.setValue(herbList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle the error and set the error message to the LiveData
+                errorMessageLiveData.setValue(databaseError.getMessage());
+            }
+        });
+    }
+
+    public void refreshHerbData() {
+        loadHerbsFromFirebase(); // This method can be used to reload the data
     }
 
     public LiveData<String> getErrorMessage() {
