@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.pinellia.HerbDetails;
 import com.example.pinellia.R;
+import com.example.pinellia.SearchHerbActivity;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentHomeBinding;
 import com.example.pinellia.model.Herb;
@@ -78,38 +79,8 @@ public class HomeFragment extends Fragment {
             Toast.makeText(getActivity(), "Failed to retrieve data: " + errorMessage, Toast.LENGTH_SHORT).show();
         });
 
-        // Set up the search bar
-//        SearchView searchView = binding.searchView;
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                // Filter the herb list based on the search query
-//                filterHerbs(newText);
-//                return true;
-//            }
-//        });
-
         return root;
     }
-
-    // Helper method to filter the herb list based on the search query
-//    private void filterHerbs(String query) {
-//        List<Herb> filteredHerbs = new ArrayList<>();
-//
-//        for (Herb herb : herbList) {
-//            if (herb.getName().toLowerCase().contains(query.toLowerCase())) {
-//                filteredHerbs.add(herb);
-//            }
-//        }
-//
-//        // Update the adapter with the filtered list
-//        herbAdapter.setFilter(filteredHerbs);
-//    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -122,7 +93,9 @@ public class HomeFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle menu item clicks
         if (item.getItemId() == R.id.action_search) {
-            Toast.makeText(getActivity(), "Search icon clicked", Toast.LENGTH_SHORT).show();
+            // Launch SearchHerbActivity
+            Intent intent = new Intent(getActivity(), SearchHerbActivity.class);
+            startActivity(intent);
             return true;
         }
         return super.onOptionsItemSelected(item);
