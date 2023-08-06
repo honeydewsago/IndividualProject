@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.pinellia.databinding.FragmentFavouritesBinding;
-import com.example.pinellia.ui.self_care.SelfCareViewModel;
 
 public class FavouritesFragment extends Fragment {
 

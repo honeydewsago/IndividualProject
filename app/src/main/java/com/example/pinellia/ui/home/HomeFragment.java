@@ -8,7 +8,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,14 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.pinellia.HerbDetails;
 import com.example.pinellia.R;
-import com.example.pinellia.SearchHerbActivity;
+import com.example.pinellia.ui.searchHerb.SearchHerbActivity;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentHomeBinding;
 import com.example.pinellia.model.Herb;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class HomeFragment extends Fragment {
 

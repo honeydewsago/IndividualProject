@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_selfcare"
-        android:name="com.example.pinellia.ui.self_care.SelfCareFragment"
+        android:name="com.example.pinellia.ui.selfCare.SelfCareFragment"
         android:label="@string/title_selfcare"
         tools:layout="@layout/fragment_self_care" />
 
