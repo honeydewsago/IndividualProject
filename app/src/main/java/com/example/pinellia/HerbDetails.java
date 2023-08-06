@@ -4,19 +4,26 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.pinellia.databinding.ActivityHerbDetailsBinding;
+import com.example.pinellia.databinding.ActivitySearchHerbBinding;
 import com.example.pinellia.model.Herb;
 
 public class HerbDetails extends AppCompatActivity {
 
+    private ActivityHerbDetailsBinding binding;
     private Herb mHerb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_herb_details);
+
+        binding = ActivityHerbDetailsBinding.inflate(getLayoutInflater());
+        View root = binding.getRoot();
+        setContentView(root);
 
         // Get the data passed from HomeFragment
         Intent intent = getIntent();

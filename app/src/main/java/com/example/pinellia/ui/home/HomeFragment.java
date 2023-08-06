@@ -3,17 +3,22 @@ package com.example.pinellia.ui.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.pinellia.HerbDetails;
+import com.example.pinellia.R;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentHomeBinding;
 import com.example.pinellia.model.Herb;
@@ -28,6 +33,14 @@ public class HomeFragment extends Fragment {
     private HerbAdapter herbAdapter;
     private List<Herb> herbList;
     private HomeViewModel homeViewModel;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        // Set up the search bar
+        setHasOptionsMenu(true);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -66,10 +79,6 @@ public class HomeFragment extends Fragment {
         });
 
         // Set up the search bar
-        setHasOptionsMenu(true); // Add this line to indicate that the fragment has its own menu items.
-
-
-        // Set up the search bar
 //        SearchView searchView = binding.searchView;
 //        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 //            @Override
@@ -101,6 +110,23 @@ public class HomeFragment extends Fragment {
 //        // Update the adapter with the filtered list
 //        herbAdapter.setFilter(filteredHerbs);
 //    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu_home_fragment.xml file into the menu
+        inflater.inflate(R.menu.fragment_home_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle menu item clicks
+        if (item.getItemId() == R.id.action_search) {
+            Toast.makeText(getActivity(), "Search icon clicked", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     public void onDestroyView() {
