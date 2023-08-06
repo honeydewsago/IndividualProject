@@ -1,4 +1,4 @@
-package com.example.pinellia.ui.self_care;
+package com.example.pinellia.ui.selfCare;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.example.pinellia.ui.self_care;
+package com.example.pinellia.ui.selfCare;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
