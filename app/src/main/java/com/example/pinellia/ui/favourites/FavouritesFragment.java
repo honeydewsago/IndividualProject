@@ -25,7 +25,7 @@ public class FavouritesFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Set up the search bar
         setHasOptionsMenu(true);
     }
