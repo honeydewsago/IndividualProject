@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.example.pinellia.HerbDetails;
 import com.example.pinellia.adapter.HerbAdapter;
@@ -70,6 +71,11 @@ public class SearchHerbActivity extends AppCompatActivity {
                 searchResults.addAll(herbs);
                 searchResultsAdapter.notifyDataSetChanged();
             }
+        });
+
+        searchHerbViewModel.getErrorMessage().observe(this, errorMessage -> {
+            // Handle the error message
+            Toast.makeText(this, "Failed to retrieve data: " + errorMessage, Toast.LENGTH_SHORT).show();
         });
     }
 

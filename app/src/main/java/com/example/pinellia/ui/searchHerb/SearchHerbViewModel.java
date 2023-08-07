@@ -67,7 +67,7 @@ public class SearchHerbViewModel extends ViewModel {
         });
     }
 
-     void performSearch(String query) {
+     public void performSearch(String query) {
 
         if (herbListLiveData == null || herbListLiveData.getValue() == null) {
             return; // No herbs available
