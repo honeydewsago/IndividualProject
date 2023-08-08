@@ -1,7 +1,6 @@
 package com.example.pinellia.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Herb implements Serializable {
@@ -13,7 +12,7 @@ public class Herb implements Serializable {
     private String namePinyin;
     private String property;
     private List<String> meridianTropism;
-    private List<String> flavor;
+    private List<String> flavour;
     private String toxicology;
     private String storage;
     private String characteristics;
@@ -30,7 +29,7 @@ public class Herb implements Serializable {
         // Required empty constructor
     }
 
-    public Herb(String id, String name, String nameScientific, String nameCN, String namePinyin, String property, List<String> meridianTropism, List<String> flavor, String toxicology, String storage, String characteristics, String placeOfOrigin, String medicinePart, String method, String effect, String usage, String dosage, String prohibition, String imageLink) {
+    public Herb(String id, String name, String nameScientific, String nameCN, String namePinyin, String property, List<String> meridianTropism, List<String> flavour, String toxicology, String storage, String characteristics, String placeOfOrigin, String medicinePart, String method, String effect, String usage, String dosage, String prohibition, String imageLink) {
         this.id = id;
         this.name = name;
         this.nameScientific = nameScientific;
@@ -38,7 +37,7 @@ public class Herb implements Serializable {
         this.namePinyin = namePinyin;
         this.property = property;
         this.meridianTropism = meridianTropism;
-        this.flavor = flavor;
+        this.flavour = flavour;
         this.toxicology = toxicology;
         this.storage = storage;
         this.characteristics = characteristics;
@@ -80,8 +79,8 @@ public class Herb implements Serializable {
         return meridianTropism;
     }
 
-    public List<String> getFlavor() {
-        return flavor;
+    public List<String> getFlavour() {
+        return flavour;
     }
 
     public String getToxicology() {

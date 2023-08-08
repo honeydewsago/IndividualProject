@@ -9,4 +9,10 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green_medium">#FF91C54F</color>
     <color name="green_dark">#FF50742C</color>
+    <color name="pastel_green_light">#FFD7E1CA</color>
+    <color name="pastel_green">#FFABC38B</color>
+    <color name="red">#FFED2939</color>
+    <color name="orange">#FFFA9C1B</color>
+    <color name="light_blue">#FF86BEDA</color>
+    <color name="blue">#FF0147AB</color>
 </resources>
