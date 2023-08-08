@@ -1,6 +1,8 @@
 package com.example.pinellia.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Herb implements Serializable {
 
@@ -10,8 +12,8 @@ public class Herb implements Serializable {
     private String nameCN;
     private String namePinyin;
     private String property;
-    private String meridianTropism;
-    private String flavor;
+    private List<String> meridianTropism;
+    private List<String> flavor;
     private String toxicology;
     private String storage;
     private String characteristics;
@@ -22,12 +24,13 @@ public class Herb implements Serializable {
     private String usage;
     private String dosage;
     private String prohibition;
+    private String imageLink;
 
     public Herb() {
         // Required empty constructor
     }
 
-    public Herb(String id, String name, String nameScientific, String nameCN, String namePinyin, String property, String meridianTropism, String flavor, String toxicology, String storage, String characteristics, String placeOfOrigin, String medicinePart, String method, String effect, String usage, String dosage, String prohibition) {
+    public Herb(String id, String name, String nameScientific, String nameCN, String namePinyin, String property, List<String> meridianTropism, List<String> flavor, String toxicology, String storage, String characteristics, String placeOfOrigin, String medicinePart, String method, String effect, String usage, String dosage, String prohibition, String imageLink) {
         this.id = id;
         this.name = name;
         this.nameScientific = nameScientific;
@@ -46,6 +49,7 @@ public class Herb implements Serializable {
         this.usage = usage;
         this.dosage = dosage;
         this.prohibition = prohibition;
+        this.imageLink = imageLink;
     }
 
     public String getId() {
@@ -72,11 +76,11 @@ public class Herb implements Serializable {
         return property;
     }
 
-    public String getMeridianTropism() {
+    public List<String> getMeridianTropism() {
         return meridianTropism;
     }
 
-    public String getFlavor() {
+    public List<String> getFlavor() {
         return flavor;
     }
 
@@ -120,4 +124,7 @@ public class Herb implements Serializable {
         return prohibition;
     }
 
+    public String getImageLink() {
+        return imageLink;
+    }
 }
