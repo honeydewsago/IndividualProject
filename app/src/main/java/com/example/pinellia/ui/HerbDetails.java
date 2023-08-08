@@ -1,6 +1,7 @@
-package com.example.pinellia;
+package com.example.pinellia.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,7 +38,23 @@ public class HerbDetails extends AppCompatActivity {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
 
-            Toast.makeText(this, ""+mHerb.getName(), Toast.LENGTH_SHORT).show();
+            // Display herb data
+            binding.textViewName.setText(mHerb.getName());
+            binding.textViewNameScientific.setText(mHerb.getNameScientific());
+            binding.textViewNameCN.setText(mHerb.getNameCN()+" "+mHerb.getNamePinyin());
+            binding.textViewProperty.setText(mHerb.getProperty());
+//            binding.textViewMeridianTropism.setText(mHerb.getMeridianTropism());
+//            binding.textViewFlavor.setText(mHerb.getFlavor());
+            binding.textViewToxicology.setText(mHerb.getToxicology());
+            binding.textViewStorage.setText(mHerb.getStorage());
+            binding.textViewCharacteristics.setText(mHerb.getCharacteristics());
+            binding.textViewPlaceOrigin.setText(mHerb.getPlaceOfOrigin());
+            binding.textViewMedicinePart.setText(mHerb.getMedicinePart());
+            binding.textViewMethod.setText(mHerb.getMethod());
+            binding.textViewEffect.setText(mHerb.getEffect());
+            binding.textViewUsage.setText(mHerb.getUsage());
+            binding.textViewDosage.setText(mHerb.getDosage());
+            binding.textViewProhibition.setText(mHerb.getProhibition());
         }
     }
 
