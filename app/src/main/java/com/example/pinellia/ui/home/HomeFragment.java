@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.pinellia.HerbDetails;
+import com.example.pinellia.ui.HerbDetails;
 import com.example.pinellia.R;
 import com.example.pinellia.ui.searchHerb.SearchHerbActivity;
 import com.example.pinellia.adapter.HerbAdapter;

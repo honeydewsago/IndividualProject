@@ -16,7 +16,7 @@
             android:name=".ui.searchHerb.SearchHerbActivity"
             android:exported="false" />
         <activity
-            android:name=".HerbDetails"
+            android:name=".ui.HerbDetails"
             android:exported="false" />
         <activity
             android:name=".SplashActivity"
