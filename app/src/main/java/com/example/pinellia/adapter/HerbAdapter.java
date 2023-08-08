@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.pinellia.databinding.CardviewHerbItemBinding;
+import com.example.pinellia.databinding.ItemHerbCardviewBinding;
 import com.example.pinellia.model.Herb;
 
 import java.util.List;
@@ -24,7 +24,7 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
     @Override
     public HerbViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        CardviewHerbItemBinding binding = CardviewHerbItemBinding.inflate(layoutInflater, parent, false);
+        ItemHerbCardviewBinding binding = ItemHerbCardviewBinding.inflate(layoutInflater, parent, false);
         return new HerbViewHolder(binding);
     }
 
@@ -55,9 +55,9 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
 //    }
 
     public class HerbViewHolder extends RecyclerView.ViewHolder {
-        private final CardviewHerbItemBinding binding;
+        private final ItemHerbCardviewBinding binding;
 
-        HerbViewHolder(@NonNull CardviewHerbItemBinding binding) {
+        HerbViewHolder(@NonNull ItemHerbCardviewBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
 

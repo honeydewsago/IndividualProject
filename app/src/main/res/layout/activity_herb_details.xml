@@ -94,13 +94,12 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/textViewMeridianTropism"
-            android:layout_width="wrap_content"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewMeridianTropism"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:text="Meridian Tropism"
-            android:textSize="16sp" />
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp" />
 
         <TextView
             android:id="@+id/textViewFlavorTitle"

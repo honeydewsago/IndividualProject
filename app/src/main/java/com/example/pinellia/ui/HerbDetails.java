@@ -3,6 +3,8 @@ package com.example.pinellia.ui;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -12,9 +14,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.pinellia.R;
+import com.example.pinellia.adapter.MeridianTropismAdapter;
 import com.example.pinellia.databinding.ActivityHerbDetailsBinding;
 import com.example.pinellia.databinding.ActivitySearchHerbBinding;
 import com.example.pinellia.model.Herb;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 
 public class HerbDetails extends AppCompatActivity {
 
@@ -48,6 +54,21 @@ public class HerbDetails extends AppCompatActivity {
             // Update the color of the box based on the property
             Drawable backgroundDrawable = getBackgroundDrawableForProperty(mHerb.getProperty());
             binding.herbPropertyLayout.setBackground(backgroundDrawable);
+
+            // Initialize RecyclerView for meridian tropism
+//            binding.recyclerViewMeridianTropism.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+            // Initialize RecyclerView with FlexboxLayoutManager
+            FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
+            layoutManager.setFlexWrap(FlexWrap.WRAP); // Enable item wrapping
+            layoutManager.setJustifyContent(JustifyContent.FLEX_START); // Align items to the start of the container
+
+            binding.recyclerViewMeridianTropism.setLayoutManager(layoutManager);
+
+            // Create an adapter and set it to the RecyclerView
+            MeridianTropismAdapter adapter = new MeridianTropismAdapter(mHerb.getMeridianTropism());
+            binding.recyclerViewMeridianTropism.setAdapter(adapter);
+
             binding.textViewProperty.setText(mHerb.getProperty());
 
             if (mHerb.getToxicology().isEmpty()) {
@@ -66,6 +87,7 @@ public class HerbDetails extends AppCompatActivity {
             binding.textViewUsage.setText(mHerb.getUsage());
             binding.textViewDosage.setText(mHerb.getDosage());
             binding.textViewProhibition.setText(mHerb.getProhibition());
+
 
 //            binding.textViewMeridianTropism.setText(mHerb.getMeridianTropism());
 //            binding.textViewFlavor.setText(mHerb.getFlavor());
