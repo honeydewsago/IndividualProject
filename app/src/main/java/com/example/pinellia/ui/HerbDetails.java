@@ -10,9 +10,13 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.pinellia.R;
 import com.example.pinellia.adapter.MeridianTropismAdapter;
 import com.example.pinellia.databinding.ActivityHerbDetailsBinding;
@@ -46,6 +50,19 @@ public class HerbDetails extends AppCompatActivity {
                 getSupportActionBar().setTitle(mHerb.getName());
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
+
+            // Load the image from Firebase Storage using Glide
+            String imageLink = mHerb.getImageLink();
+
+            RequestOptions requestOptions = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache image
+                    .placeholder(R.drawable.bg_light_green_gradient) // Placeholder while loading
+                    .error(R.drawable.bg_light_green_gradient); // Error placeholder
+
+            Glide.with(this)
+                    .load(imageLink)
+                    .apply(requestOptions)
+                    .into(binding.imageViewHerb);
 
             // Display herb data
             binding.textViewNameScientific.setText(mHerb.getNameScientific());

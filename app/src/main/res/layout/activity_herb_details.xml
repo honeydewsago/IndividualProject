@@ -14,13 +14,14 @@
         android:padding="20dp">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/imageViewHerb"
             android:layout_width="300dp"
             android:layout_height="200dp"
             app:srcCompat="@drawable/bg_light_green_gradient"
             android:layout_gravity="center"
             android:paddingTop="8dp"
-            android:paddingBottom="16dp"/>
+            android:paddingBottom="16dp"
+            android:scaleType="centerCrop"/>
 
         <TextView
             android:id="@+id/textViewNameScientificTitle"
