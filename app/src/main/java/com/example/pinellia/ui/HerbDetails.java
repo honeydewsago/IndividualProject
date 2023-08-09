@@ -51,14 +51,11 @@ public class HerbDetails extends AppCompatActivity {
             binding.textViewNameScientific.setText(mHerb.getNameScientific());
             binding.textViewNameCN.setText(mHerb.getNameCN()+" "+mHerb.getNamePinyin());
 
-            // Update the color of the box based on the property
+            // Update the color of the box based on herb property
             Drawable backgroundDrawable = getBackgroundDrawableForProperty(mHerb.getProperty());
             binding.herbPropertyLayout.setBackground(backgroundDrawable);
 
-            // Initialize RecyclerView for meridian tropism
-//            binding.recyclerViewMeridianTropism.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
-
-            // Initialize RecyclerView with FlexboxLayoutManager
+            // Initialize RecyclerView with FlexboxLayoutManager to display meridian tropism
             FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
             layoutManager.setFlexWrap(FlexWrap.WRAP); // Enable item wrapping
             layoutManager.setJustifyContent(JustifyContent.FLEX_START); // Align items to the start of the container
@@ -68,6 +65,18 @@ public class HerbDetails extends AppCompatActivity {
             // Create an adapter and set it to the RecyclerView
             MeridianTropismAdapter adapter = new MeridianTropismAdapter(mHerb.getMeridianTropism());
             binding.recyclerViewMeridianTropism.setAdapter(adapter);
+
+
+            // Initialize RecyclerView with new FlexboxLayoutManager to display herb flavour
+            FlexboxLayoutManager layoutManager2 = new FlexboxLayoutManager(this);
+            layoutManager2.setFlexWrap(FlexWrap.WRAP); // Enable item wrapping
+            layoutManager2.setJustifyContent(JustifyContent.FLEX_START); // Align items to the start of the container
+
+            binding.recyclerViewFlavour.setLayoutManager(layoutManager2);
+
+            // Use meridian tropism adapter to display flavour and set it to the RecyclerView
+            MeridianTropismAdapter flavourAdapter = new MeridianTropismAdapter(mHerb.getFlavour());
+            binding.recyclerViewFlavour.setAdapter(flavourAdapter);
 
             binding.textViewProperty.setText(mHerb.getProperty());
 
@@ -88,9 +97,6 @@ public class HerbDetails extends AppCompatActivity {
             binding.textViewDosage.setText(mHerb.getDosage());
             binding.textViewProhibition.setText(mHerb.getProhibition());
 
-
-//            binding.textViewMeridianTropism.setText(mHerb.getMeridianTropism());
-//            binding.textViewFlavor.setText(mHerb.getFlavor());
         }
     }
 
