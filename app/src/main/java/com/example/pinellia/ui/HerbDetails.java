@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
@@ -26,12 +27,23 @@ import com.example.pinellia.model.Herb;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class HerbDetails extends AppCompatActivity {
 
+    private static final String PREFS_NAME = "AppPreferences";
+    private static final String KEY_FAVORITE_HERBS = "favoriteHerbIds";
+    private static final String KEY_HISTORY = "historyHerbIds";
     private ActivityHerbDetailsBinding binding;
     private Herb mHerb;
     private boolean isFavorite = false;
+    private String herbId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +65,24 @@ public class HerbDetails extends AppCompatActivity {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
 
+            // Initialize herbId with the ID of the current herb
+            herbId = mHerb.getId();
+
+            saveBrowseHistory(herbId); // Save the herbId to history data
+
             binding.buttonFavorite.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     isFavorite = !isFavorite;
                     updateFavoriteButtonIcon();
+                    updateFavoriteList();
+
+                    // Display Toast message
+                    if (isFavorite) {
+                        Toast.makeText(HerbDetails.this, "Added to favorites", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(HerbDetails.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
 
@@ -124,9 +149,56 @@ public class HerbDetails extends AppCompatActivity {
             binding.textViewDosage.setText(mHerb.getDosage());
             binding.textViewProhibition.setText(mHerb.getProhibition());
 
+            // Update isFavorite based on saved favorite herb IDs
+            updateFavoriteButtonState();
             updateFavoriteButtonIcon();
         }
     }
+
+    private void saveBrowseHistory(String herbId) {
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        Set<String> historyHerbIds = preferences.getStringSet(KEY_HISTORY, new HashSet<>());
+
+        historyHerbIds.add(herbId);
+
+        preferences.edit().putStringSet(KEY_HISTORY, historyHerbIds).apply();
+    }
+
+    private void updateFavoriteList() {
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String favoriteHerbsJson = preferences.getString(KEY_FAVORITE_HERBS, null);
+
+        List<String> favoriteHerbIds = new ArrayList<>();
+
+        if (favoriteHerbsJson != null) {
+            favoriteHerbIds = new Gson().fromJson(favoriteHerbsJson, new TypeToken<List<String>>() {}.getType());
+        }
+
+        if (isFavorite) {
+            if (!favoriteHerbIds.contains(herbId)) {
+                favoriteHerbIds.add(0, herbId); // Add at the beginning to maintain order
+            }
+        } else {
+            favoriteHerbIds.remove(herbId);
+        }
+
+        String updatedFavoriteHerbsJson = new Gson().toJson(favoriteHerbIds);
+        preferences.edit().putString(KEY_FAVORITE_HERBS, updatedFavoriteHerbsJson).apply();
+    }
+
+    private void updateFavoriteButtonState() {
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String favoriteHerbsJson = preferences.getString(KEY_FAVORITE_HERBS, null);
+
+        List<String> favoriteHerbIds = new ArrayList<>();
+
+        if (favoriteHerbsJson != null) {
+            favoriteHerbIds.addAll(new Gson().fromJson(favoriteHerbsJson, new TypeToken<List<String>>() {}.getType()));
+        }
+
+        isFavorite = favoriteHerbIds.contains(herbId);
+    }
+
 
     private void updateFavoriteButtonIcon() {
         ImageButton buttonFavorite = findViewById(R.id.buttonFavorite);

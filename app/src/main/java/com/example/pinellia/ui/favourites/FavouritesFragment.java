@@ -1,5 +1,7 @@
 package com.example.pinellia.ui.favourites;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,13 +16,33 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.pinellia.R;
+import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentFavouritesBinding;
+import com.example.pinellia.model.Herb;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class FavouritesFragment extends Fragment {
 
     private FragmentFavouritesBinding binding;
+    private static final String PREFS_NAME = "AppPreferences";
+    private static final String KEY_FAVORITE_HERBS = "favoriteHerbIds";
+    private List<String> favoriteHerbIdsList;
+    private List<Herb> favoriteHerbList;
+    private HerbAdapter herbAdapter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,15 +54,66 @@ public class FavouritesFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        FavouritesViewModel favouritesViewModel =
-                new ViewModelProvider(this).get(FavouritesViewModel.class);
+
+        FavouritesViewModel favouritesViewModel = new ViewModelProvider(this).get(FavouritesViewModel.class);
 
         binding = FragmentFavouritesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textNotifications;
-        favouritesViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        favoriteHerbIdsList = new ArrayList<>();
+        favoriteHerbList = new ArrayList<>();
+
+        // Retrieve favorite herb IDs from SharedPreferences and populate the list
+        retrieveFavoriteHerbIds();
+
+        // Fetch favorite herbs from Firebase based on their IDs
+        fetchFavoriteHerbs();
+
+        // Set up RecyclerView to display favorite herbs
+        binding.recyclerViewFavourites.setLayoutManager(new LinearLayoutManager(getActivity()));
+        herbAdapter = new HerbAdapter(favoriteHerbList);
+        binding.recyclerViewFavourites.setAdapter(herbAdapter);
+
         return root;
+    }
+
+    private void fetchFavoriteHerbs() {
+        // Firebase reference
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("herbs");
+
+        // Clear existing favorite herb list
+        favoriteHerbList.clear();
+
+        // Iterate through favorite herb IDs and fetch corresponding herbs from Firebase
+        for (String herbId : favoriteHerbIdsList) {
+            databaseReference.child(herbId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Herb herb = dataSnapshot.getValue(Herb.class);
+                    if (herb != null) {
+                        favoriteHerbList.add(herb);
+                        herbAdapter.notifyDataSetChanged();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // Handle error if needed
+                }
+            });
+        }
+    }
+
+    private void retrieveFavoriteHerbIds() {
+        SharedPreferences preferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        String favoriteHerbsJson = preferences.getString(KEY_FAVORITE_HERBS, null);
+
+        favoriteHerbIdsList.clear();
+
+        if (favoriteHerbsJson != null) {
+            List<String> favoriteHerbIds = new Gson().fromJson(favoriteHerbsJson, new TypeToken<List<String>>() {}.getType());
+            favoriteHerbIdsList.addAll(favoriteHerbIds);
+        }
     }
 
     @Override
