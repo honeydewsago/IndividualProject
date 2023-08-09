@@ -16,8 +16,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="20dp"
         app:shapeAppearance="@style/roundedImageView"
-        app:strokeColor="@color/green_medium"
-        app:strokeWidth="1dp" />
+        android:scaleType="centerCrop" />
 
     <TextView
         android:id="@+id/textViewName"

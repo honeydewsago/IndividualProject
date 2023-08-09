@@ -7,6 +7,10 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.pinellia.R;
 import com.example.pinellia.databinding.ItemHerbCardviewBinding;
 import com.example.pinellia.model.Herb;
 
@@ -80,6 +84,19 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
 
         void bind(Herb herb) {
             binding.textViewName.setText(herb.getName());
+
+            // Load the image from Firebase Storage using Glide
+            String imageLink = herb.getImageLink();
+
+            RequestOptions requestOptions = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache image
+                    .placeholder(R.drawable.white_box_bg) // Placeholder while loading
+                    .error(R.drawable.white_box_bg); // Error placeholder
+
+            Glide.with(binding.getRoot().getContext())
+                    .load(imageLink)
+                    .apply(requestOptions)
+                    .into(binding.imageViewHerb);
         }
     }
 }
