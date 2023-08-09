@@ -8,9 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.pinellia.databinding.ItemHerbCardviewBinding;
-import com.example.pinellia.databinding.ItemMeridianTropismBinding;
-import com.example.pinellia.model.Herb;
+import com.example.pinellia.databinding.ItemMeridianFlavourBinding;
 
 import java.util.List;
 
@@ -25,7 +23,7 @@ public class MeridianTropismAdapter extends RecyclerView.Adapter<MeridianTropism
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        ItemMeridianTropismBinding binding = ItemMeridianTropismBinding.inflate(layoutInflater, parent, false);
+        ItemMeridianFlavourBinding binding = ItemMeridianFlavourBinding.inflate(layoutInflater, parent, false);
         return new MeridianTropismAdapter.ViewHolder(binding);
     }
 
@@ -41,14 +39,14 @@ public class MeridianTropismAdapter extends RecyclerView.Adapter<MeridianTropism
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        private final ItemMeridianTropismBinding binding;
+        private final ItemMeridianFlavourBinding binding;
         TextView textViewMeridianTropism;
 
-        public ViewHolder(ItemMeridianTropismBinding binding) {
+        public ViewHolder(ItemMeridianFlavourBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
 
-            textViewMeridianTropism = binding.tvMeridianTropismItem;
+            textViewMeridianTropism = binding.tvMeridianFlavourItem;
         }
     }
 }
