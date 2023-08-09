@@ -76,11 +76,17 @@ public class SearchHerbViewModel extends ViewModel {
         List<Herb> herbList = herbListLiveData.getValue();
         List<Herb> searchResults = new ArrayList<>();
 
-        for (Herb herb : herbList) {
-            if (herb.getName().toLowerCase().contains(query.toLowerCase())) {
-                searchResults.add(herb);
-            }
-        }
+         for (Herb herb : herbList) {
+             String name = herb.getName().toLowerCase();
+             String nameCN = herb.getNameCN().toLowerCase();
+             String namePinyin = herb.getNamePinyin().toLowerCase();
+
+             if (name.contains(query.toLowerCase()) ||
+                     nameCN.contains(query.toLowerCase()) ||
+                     namePinyin.contains(query.toLowerCase())) {
+                 searchResults.add(herb);
+             }
+         }
 
         searchResultsLiveData.setValue(searchResults);
     }
