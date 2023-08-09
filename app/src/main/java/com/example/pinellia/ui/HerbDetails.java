@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,7 @@ public class HerbDetails extends AppCompatActivity {
 
     private ActivityHerbDetailsBinding binding;
     private Herb mHerb;
+    private boolean isFavorite = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,14 @@ public class HerbDetails extends AppCompatActivity {
                 getSupportActionBar().setTitle(mHerb.getName());
                 getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             }
+
+            binding.buttonFavorite.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    isFavorite = !isFavorite;
+                    updateFavoriteButtonIcon();
+                }
+            });
 
             // Load the image from Firebase Storage using Glide
             String imageLink = mHerb.getImageLink();
@@ -114,7 +124,14 @@ public class HerbDetails extends AppCompatActivity {
             binding.textViewDosage.setText(mHerb.getDosage());
             binding.textViewProhibition.setText(mHerb.getProhibition());
 
+            updateFavoriteButtonIcon();
         }
+    }
+
+    private void updateFavoriteButtonIcon() {
+        ImageButton buttonFavorite = findViewById(R.id.buttonFavorite);
+        int iconRes = isFavorite ? R.drawable.baseline_star_50 : R.drawable.baseline_star_border_50;
+        buttonFavorite.setImageResource(iconRes);
     }
 
     private Drawable getBackgroundDrawableForProperty(String property) {
