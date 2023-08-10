@@ -13,6 +13,9 @@
         android:theme="@style/Theme.Pinellia"
         tools:targetApi="31">
         <activity
+            android:name=".ui.BrowseHistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.searchHerb.SearchHerbActivity"
             android:exported="false" />
         <activity
