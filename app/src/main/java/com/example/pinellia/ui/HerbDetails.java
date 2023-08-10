@@ -75,7 +75,7 @@ public class HerbDetails extends AppCompatActivity {
                 public void onClick(View view) {
                     isFavorite = !isFavorite;
                     updateFavoriteButtonIcon();
-                    updateFavoriteList();
+                    saveFavoriteList();
 
                     // Display Toast message
                     if (isFavorite) {
@@ -157,14 +157,22 @@ public class HerbDetails extends AppCompatActivity {
 
     private void saveBrowseHistory(String herbId) {
         SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        Set<String> historyHerbIds = preferences.getStringSet(KEY_HISTORY, new HashSet<>());
+        String historyHerbsJson = preferences.getString(KEY_HISTORY, null);
 
-        historyHerbIds.add(herbId);
+        List<String> historyHerbIds = new ArrayList<>();
 
-        preferences.edit().putStringSet(KEY_HISTORY, historyHerbIds).apply();
+        if (historyHerbsJson != null) {
+            historyHerbIds = new Gson().fromJson(historyHerbsJson, new TypeToken<List<String>>() {}.getType());
+        }
+
+        historyHerbIds.add(0, herbId); // Add at the beginning to maintain order
+
+        String updatedHistoryHerbsJson = new Gson().toJson(historyHerbIds);
+        preferences.edit().putString(KEY_HISTORY, updatedHistoryHerbsJson).apply();
     }
 
-    private void updateFavoriteList() {
+
+    private void saveFavoriteList() {
         SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         String favoriteHerbsJson = preferences.getString(KEY_FAVORITE_HERBS, null);
 
