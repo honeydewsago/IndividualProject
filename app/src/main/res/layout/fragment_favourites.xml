@@ -4,10 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.favourites.FavouritesFragment">
+    tools:context=".ui.favourites.FavouritesFragment"
+    android:background="@drawable/bg_light_green_gradient">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewFavourites"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_marginHorizontal="12dp"
+        android:paddingTop="12dp" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -68,9 +69,6 @@ public class FavouritesFragment extends Fragment {
         // Retrieve favorite herb IDs from SharedPreferences and populate the list
         retrieveFavoriteHerbIds();
 
-        // Fetch favorite herbs from Firebase based on their IDs
-        fetchFavoriteHerbs();
-
         // Set up RecyclerView to display favorite herbs
         binding.recyclerViewFavourites.setLayoutManager(new LinearLayoutManager(getActivity()));
         herbAdapter = new HerbAdapter(favoriteHerbList);
@@ -97,16 +95,16 @@ public class FavouritesFragment extends Fragment {
         // Retrieve the latest favorite herb IDs from SharedPreferences
         retrieveFavoriteHerbIds();
 
-        // Refresh the recycler view
-        herbAdapter.notifyDataSetChanged();
+        // Fetch and update the recycler view
+        fetchAndUpdateFavoriteHerbs();
     }
 
-    private void fetchFavoriteHerbs() {
-        // Firebase reference
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("herbs");
-
+    private void fetchAndUpdateFavoriteHerbs() {
         // Clear existing favorite herb list
         favoriteHerbList.clear();
+
+        // Firebase reference
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("herbs");
 
         // Iterate through favorite herb IDs and fetch corresponding herbs from Firebase
         for (String herbId : favoriteHerbIdsList) {
@@ -123,10 +121,12 @@ public class FavouritesFragment extends Fragment {
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
                     // Handle error if needed
+                    Log.e("FetchAndUpdate", "Database error: " + databaseError.getMessage());
                 }
             });
         }
     }
+
 
     private void retrieveFavoriteHerbIds() {
         SharedPreferences preferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
