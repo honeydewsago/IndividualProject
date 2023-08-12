@@ -165,7 +165,11 @@ public class HerbDetails extends AppCompatActivity {
             historyHerbIds = new Gson().fromJson(historyHerbsJson, new TypeToken<List<String>>() {}.getType());
         }
 
-        historyHerbIds.add(0, herbId); // Add at the beginning to maintain order
+        // Remove the herbId if it already exists to ensure uniqueness
+        historyHerbIds.remove(herbId);
+
+        // Add the herbId at the beginning to maintain order
+        historyHerbIds.add(0, herbId);
 
         String updatedHistoryHerbsJson = new Gson().toJson(historyHerbIds);
         preferences.edit().putString(KEY_HISTORY, updatedHistoryHerbsJson).apply();
