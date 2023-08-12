@@ -64,6 +64,10 @@ public class FavouritesFragment extends Fragment {
         binding = FragmentFavouritesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        // Hide the RecyclerView and show the TextView initially
+        binding.recyclerViewFavourites.setVisibility(View.GONE);
+        binding.textViewNoFavourites.setVisibility(View.VISIBLE);
+
         favoriteHerbIdsList = new ArrayList<>();
         favoriteHerbList = new ArrayList<>();
 
@@ -115,7 +119,18 @@ public class FavouritesFragment extends Fragment {
                     Herb herb = dataSnapshot.getValue(Herb.class);
                     if (herb != null) {
                         favoriteHerbList.add(herb);
-                        herbAdapter.notifyDataSetChanged();
+                    }
+
+                    herbAdapter.notifyDataSetChanged();
+
+                    if (favoriteHerbList.isEmpty()) {
+                        // Show the TextView and hide the RecyclerView
+                        binding.textViewNoFavourites.setVisibility(View.VISIBLE);
+                        binding.recyclerViewFavourites.setVisibility(View.GONE);
+                    } else {
+                        // Hide the TextView and show the RecyclerView
+                        binding.textViewNoFavourites.setVisibility(View.GONE);
+                        binding.recyclerViewFavourites.setVisibility(View.VISIBLE);
                     }
                 }
 
@@ -128,6 +143,15 @@ public class FavouritesFragment extends Fragment {
         }
     }
 
+    private void updateViews() {
+        if (favoriteHerbIdsList.isEmpty()) {
+            binding.textViewNoFavourites.setVisibility(View.VISIBLE);
+            binding.recyclerViewFavourites.setVisibility(View.GONE);
+        } else {
+            binding.textViewNoFavourites.setVisibility(View.GONE);
+            binding.recyclerViewFavourites.setVisibility(View.VISIBLE);
+        }
+    }
 
     private void retrieveFavoriteHerbIds() {
         SharedPreferences preferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -139,6 +163,8 @@ public class FavouritesFragment extends Fragment {
             List<String> favoriteHerbIds = new Gson().fromJson(favoriteHerbsJson, new TypeToken<List<String>>() {}.getType());
             favoriteHerbIdsList.addAll(favoriteHerbIds);
         }
+
+        updateViews();
     }
 
     @Override
