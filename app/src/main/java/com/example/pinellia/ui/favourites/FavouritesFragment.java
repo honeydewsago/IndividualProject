@@ -119,18 +119,7 @@ public class FavouritesFragment extends Fragment {
                     Herb herb = dataSnapshot.getValue(Herb.class);
                     if (herb != null) {
                         favoriteHerbList.add(herb);
-                    }
-
-                    herbAdapter.notifyDataSetChanged();
-
-                    if (favoriteHerbList.isEmpty()) {
-                        // Show the TextView and hide the RecyclerView
-                        binding.textViewNoFavourites.setVisibility(View.VISIBLE);
-                        binding.recyclerViewFavourites.setVisibility(View.GONE);
-                    } else {
-                        // Hide the TextView and show the RecyclerView
-                        binding.textViewNoFavourites.setVisibility(View.GONE);
-                        binding.recyclerViewFavourites.setVisibility(View.VISIBLE);
+                        herbAdapter.notifyDataSetChanged();
                     }
                 }
 
