@@ -50,6 +50,10 @@ public class BrowseHistoryActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
+        // Hide the RecyclerView and show the TextView initially
+        binding.recyclerViewHistory.setVisibility(View.GONE);
+        binding.textViewNoHistory.setVisibility(View.VISIBLE);
+
         historyHerbIdsList = new ArrayList<>();
         historyHerbList = new ArrayList<>();
 
@@ -60,8 +64,6 @@ public class BrowseHistoryActivity extends AppCompatActivity {
         binding.recyclerViewHistory.setLayoutManager(new LinearLayoutManager(this));
         herbAdapter = new HerbAdapter(historyHerbList);
         binding.recyclerViewHistory.setAdapter(herbAdapter);
-
-        fetchHistoryHerbs();
 
         // Handle click event for each herb item
         herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
@@ -75,6 +77,18 @@ public class BrowseHistoryActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Retrieve the latest history herb IDs from SharedPreferences
+        retrieveHistoryHerbIds();
+
+        // Fetch and update the recycler view
+        fetchHistoryHerbs();
+    }
+
 
     private void fetchHistoryHerbs() {
         // Clear existing history herb list
@@ -114,6 +128,18 @@ public class BrowseHistoryActivity extends AppCompatActivity {
         if (historyHerbsJson != null) {
             List<String> historyHerbIds = new Gson().fromJson(historyHerbsJson, new TypeToken<List<String>>() {}.getType());
             historyHerbIdsList.addAll(historyHerbIds);
+        }
+
+        updateViews();
+    }
+
+    private void updateViews() {
+        if (historyHerbIdsList.isEmpty()) {
+            binding.textViewNoHistory.setVisibility(View.VISIBLE);
+            binding.recyclerViewHistory.setVisibility(View.GONE);
+        } else {
+            binding.textViewNoHistory.setVisibility(View.GONE);
+            binding.recyclerViewHistory.setVisibility(View.VISIBLE);
         }
     }
 
