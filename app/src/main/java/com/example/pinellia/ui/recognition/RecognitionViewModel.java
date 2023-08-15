@@ -6,14 +6,22 @@ import androidx.lifecycle.ViewModel;
 
 public class RecognitionViewModel extends ViewModel {
 
-    private final MutableLiveData<String> mText;
+    private boolean cameraPermissionGranted = false;
+    private String capturedImagePath;
 
-    public RecognitionViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is recognition fragment");
+    public boolean isCameraPermissionGranted() {
+        return cameraPermissionGranted;
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    public void setCameraPermissionGranted(boolean granted) {
+        cameraPermissionGranted = granted;
+    }
+
+    public String getCapturedImagePath() {
+        return capturedImagePath;
+    }
+
+    public void setCapturedImagePath(String path) {
+        capturedImagePath = path;
     }
 }
