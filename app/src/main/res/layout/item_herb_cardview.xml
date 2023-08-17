@@ -34,7 +34,7 @@
         android:id="@+id/imageViewArrow"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        app:srcCompat="@drawable/keyboard_arrow_right_green_24"
+        app:srcCompat="@drawable/baseline_keyboard_arrow_right_green_24"
         android:layout_centerVertical="true"
         android:layout_alignParentEnd="true"/>
 </RelativeLayout>
