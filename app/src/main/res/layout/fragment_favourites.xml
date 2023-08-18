@@ -19,7 +19,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="No favourite herbs found"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="italic"
         android:textColor="@color/green_dark"
         app:layout_constraintBottom_toBottomOf="parent"

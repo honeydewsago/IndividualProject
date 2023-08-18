@@ -10,20 +10,19 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center_vertical">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_gravity="end">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/imageViewHerb"
                 android:layout_width="280dp"
                 android:layout_height="180dp"
                 app:srcCompat="@drawable/bg_light_green_gradient"
-                android:layout_marginEnd="16dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="24dp"
                 android:scaleType="centerCrop"/>
 
@@ -34,8 +33,9 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:background="?android:attr/selectableItemBackground"
-                android:src="@drawable/baseline_star_border_50" />
-        </LinearLayout>
+                android:src="@drawable/baseline_star_border_50"
+                android:layout_alignParentEnd="true"/>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
