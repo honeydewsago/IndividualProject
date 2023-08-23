@@ -36,10 +36,14 @@ import com.example.pinellia.TFLiteModelExecutor;
 import com.example.pinellia.databinding.FragmentRecognitionBinding;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.tensorflow.lite.Interpreter;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
@@ -51,6 +55,7 @@ import java.util.concurrent.Executors;
 public class RecognitionFragment extends Fragment {
 
     private FragmentRecognitionBinding binding;
+    private TFLiteModelExecutor tfliteExecutor;
 
     private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
         @Override
@@ -60,6 +65,14 @@ public class RecognitionFragment extends Fragment {
             }
         }
     });
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // Initialize the TFLiteModelExecutor with the model file path
+        String modelFilePath = "trained_model.tflite";
+        tfliteExecutor = new TFLiteModelExecutor(requireContext(), modelFilePath);
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -123,6 +136,33 @@ public class RecognitionFragment extends Fragment {
         imageCapture.takePicture(outputFileOptions, Executors.newCachedThreadPool(), new ImageCapture.OnImageSavedCallback() {
             @Override
             public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+
+                if (tfliteExecutor == null) {
+                    Log.e("RecognitionFragment", "TFLite interpreter is null. Inference cannot be performed.");
+                    return;
+                }
+
+                // Convert the captured image to a bitmap
+                Bitmap capturedBitmap = BitmapFactory.decodeFile(file.getPath());
+
+                // Resize and preprocess the image as required by your model
+                Bitmap resizedBitmap = preprocessImage(capturedBitmap);
+
+                // Convert the preprocessed bitmap to a float array
+                float[] inputArray = convertBitmapToFloatArray(resizedBitmap);
+
+                // Allocate buffers for input and output tensors
+                ByteBuffer inputBuffer = ByteBuffer.allocateDirect(inputArray.length * 4); // 4 bytes per float
+                inputBuffer.order(ByteOrder.nativeOrder());
+                inputBuffer.rewind();
+                inputBuffer.asFloatBuffer().put(inputArray);
+
+                // Perform inference using the TFLite model
+                float[] prediction = tfliteExecutor.runInference(inputArray);
+
+                // Process the prediction results
+                processPrediction(prediction);
+
                 requireActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -143,6 +183,60 @@ public class RecognitionFragment extends Fragment {
                 startCamera();
             }
         });
+    }
+
+    private void processPrediction(float[] prediction) {
+        // Determine the index with the highest probability
+        int maxIndex = 0;
+        for (int i = 1; i < prediction.length; i++) {
+            if (prediction[i] > prediction[maxIndex]) {
+                maxIndex = i;
+            }
+        }
+
+        // Perform actions based on the prediction
+        String predictedClass = getClassLabel(maxIndex); // Replace with your method to get class label
+        Toast.makeText(requireContext(), "Predict: " + predictedClass, Toast.LENGTH_SHORT).show();;
+    }
+
+    private String getClassLabel(int classIndex) {
+        // Map class index to corresponding class label
+        String[] classLabels = {"heshouwu", "gouqi", "chongcao", "huangbai", "fuling", "dangshen", "baihe", "aiye", "huangqi", "gancao", "jinyinhua", "renshen", "shanyao", "tiannanxing", "luohanguo"};
+        return classLabels[classIndex];
+    }
+
+    private Bitmap preprocessImage(Bitmap originalBitmap) {
+        // Resize the image to the input size required by tflite model
+        int inputWidth = 224;
+        int inputHeight = 224;
+
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, inputWidth, inputHeight, true);
+
+        // Perform other preprocessing steps if needed, such as normalization
+        // ...
+
+        return resizedBitmap;
+    }
+
+    private float[] convertBitmapToFloatArray(Bitmap bitmap) {
+        int width = bitmap.getWidth();
+        int height = bitmap.getHeight();
+
+        // Define the channel order (assuming RGB)
+        int channelStride = width * height;
+
+        int[] intValues = new int[channelStride];
+        bitmap.getPixels(intValues, 0, width, 0, 0, width, height);
+
+        float[] floatValues = new float[width * height * 3]; // 3 channels (RGB)
+        for (int i = 0; i < intValues.length; i++) {
+            final int val = intValues[i];
+            floatValues[i * 3] = ((val >> 16) & 0xFF) / 255.0f;     // Red channel
+            floatValues[i * 3 + 1] = ((val >> 8) & 0xFF) / 255.0f;  // Green channel
+            floatValues[i * 3 + 2] = (val & 0xFF) / 255.0f;         // Blue channel
+        }
+
+        return floatValues;
     }
 
     private int aspectRatio(int width, int height) {
