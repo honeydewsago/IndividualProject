@@ -40,6 +40,9 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         // Retrieve the image path from the recognition fragment
         String imagePath = getIntent().getStringExtra("imagePath");
 
+        // Show the progress bar
+        binding.progressBar.setVisibility(View.VISIBLE);
+
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
@@ -60,6 +63,9 @@ public class RecognitionResultsActivity extends AppCompatActivity {
                         //UI Thread processing
                         if (tfliteModelExecutor != null) {
                             classifyImage(imagePath);
+
+                            // Hide the progress bar after classification is done
+                            binding.progressBar.setVisibility(View.GONE);
                         }
                     }
                 });
