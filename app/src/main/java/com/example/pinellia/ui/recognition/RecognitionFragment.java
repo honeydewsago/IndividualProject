@@ -1,11 +1,9 @@
 package com.example.pinellia.ui.recognition;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,25 +28,12 @@ import com.example.pinellia.databinding.FragmentRecognitionBinding;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 
 public class RecognitionFragment extends Fragment {
 
     private FragmentRecognitionBinding binding;
-    private TFLiteModelExecutor tfliteModelExecutor;
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        try {
-            tfliteModelExecutor = new TFLiteModelExecutor(getActivity());
-        } catch (IOException e) {
-            Log.e("tflite", "Failed to initialize an image classifier.");
-        }
-    }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -124,7 +109,9 @@ public class RecognitionFragment extends Fragment {
                     @Override
                     public void run() {
                         Toast.makeText(requireContext(), "Image saved at: " + file.getPath(), Toast.LENGTH_SHORT).show();
-                        classifyImage(file);
+
+                        // Launch the Recognition Results Activity
+                        launchRecognitionResultsActivity(file.getPath());
                     }
                 });
                 startCamera();
@@ -143,21 +130,10 @@ public class RecognitionFragment extends Fragment {
         });
     }
 
-    private void classifyImage(File file) {
-        if (tfliteModelExecutor == null || getActivity() == null) {
-            Toast.makeText(requireContext(), "Uninitialized Classifier or invalid context.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Convert the captured image to a bitmap
-        Bitmap capturedBitmap = BitmapFactory.decodeFile(file.getPath());
-
-        // Resize and preprocess the image
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(capturedBitmap, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, true);
-
-        String textToShow = tfliteModelExecutor.runInference(resizedBitmap);
-        resizedBitmap.recycle();
-        Toast.makeText(requireContext(), textToShow+"", Toast.LENGTH_SHORT).show();
+    private void launchRecognitionResultsActivity(String imagePath) {
+        Intent intent = new Intent(requireContext(), RecognitionResultsActivity.class);
+        intent.putExtra("imagePath", imagePath);
+        startActivity(intent);
     }
 
     private int aspectRatio(int width, int height) {
@@ -172,6 +148,6 @@ public class RecognitionFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-        tfliteModelExecutor.close();
+//        tfliteModelExecutor.close();
     }
 }

@@ -48,7 +48,7 @@ public class TFLiteModelExecutor {
         imageData.order(ByteOrder.nativeOrder());
         labelProbArray = new float[1][labelList.size()];
 
-        Log.d("tflite", "Created a Tensorflow Lite Image Classifier.");
+        Log.d("tflite", "Created a TFLite Model.");
     }
 
     private MappedByteBuffer loadModelFile(Activity activity) throws IOException {
@@ -74,8 +74,8 @@ public class TFLiteModelExecutor {
 
     public String runInference(Bitmap bitmap) {
         if (tflite == null) {
-            Log.e("tflite", "Image classifier has not been initialized; Skipped.");
-            return "Uninitialized Classifier.";
+            Log.e("tflite", "TFLite Model has not been initialized. Unable to run inference.");
+            return "Uninitialized TFLite Model";
         }
         convertBitmapToByteBuffer(bitmap);
         // Here's where the magic happens!!!
