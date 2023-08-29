@@ -31,7 +31,7 @@ public class TFLiteModelExecutor {
     private Interpreter tflite;
     private List<String> labelList;
     private ByteBuffer imageData = null;
-    private static final int RESULTS_TO_SHOW = 3;
+    private static final int RESULTS_TO_SHOW = 15;
     private static final int BATCH_SIZE = 1;
     private static final int PIXEL_SIZE = 3;
     static final int IMG_SIZE_X = 224;

@@ -71,7 +71,6 @@ public class RecognitionResultsActivity extends AppCompatActivity {
                 });
             }
         });
-
     }
 
     private void classifyImage(String path) {
@@ -88,7 +87,8 @@ public class RecognitionResultsActivity extends AppCompatActivity {
 
         String textToShow = tfliteModelExecutor.runInference(resizedBitmap);
         resizedBitmap.recycle();
-        Toast.makeText(this, textToShow+"", Toast.LENGTH_SHORT).show();
+
+        binding.textViewResults.setText(textToShow);
     }
 
     @Override
