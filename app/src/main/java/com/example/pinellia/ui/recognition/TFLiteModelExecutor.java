@@ -25,7 +25,7 @@ import java.util.PriorityQueue;
 
 public class TFLiteModelExecutor {
 
-    private static final String MODEL_PATH = "model.tflite";
+    private static final String MODEL_PATH = "model8.tflite";
     private static final String LABEL_PATH = "labels.txt";
 
     private Interpreter tflite;
