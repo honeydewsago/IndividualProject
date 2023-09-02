@@ -41,11 +41,11 @@ import java.util.Set;
 
 public class FavouritesFragment extends Fragment {
 
-    private FragmentFavouritesBinding binding;
     private static final String PREFS_NAME = "AppPreferences";
     private static final String KEY_FAVORITE_HERBS = "favoriteHerbIds";
+    private FragmentFavouritesBinding binding;
+    private FavouritesViewModel favouritesViewModel;
     private List<String> favoriteHerbIdsList;
-    private List<Herb> favoriteHerbList;
     private HerbAdapter herbAdapter;
 
     @Override
@@ -54,12 +54,12 @@ public class FavouritesFragment extends Fragment {
 
         // Set up the search bar
         setHasOptionsMenu(true);
+
+        favouritesViewModel= new ViewModelProvider(this).get(FavouritesViewModel.class);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-        FavouritesViewModel favouritesViewModel = new ViewModelProvider(this).get(FavouritesViewModel.class);
 
         binding = FragmentFavouritesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -69,15 +69,22 @@ public class FavouritesFragment extends Fragment {
         binding.textViewNoFavourites.setVisibility(View.VISIBLE);
 
         favoriteHerbIdsList = new ArrayList<>();
-        favoriteHerbList = new ArrayList<>();
 
         // Retrieve favorite herb IDs from SharedPreferences and populate the list
         retrieveFavoriteHerbIds();
 
         // Set up RecyclerView to display favorite herbs
         binding.recyclerViewFavourites.setLayoutManager(new LinearLayoutManager(getActivity()));
-        herbAdapter = new HerbAdapter(favoriteHerbList);
+        herbAdapter = new HerbAdapter(new ArrayList<>());
         binding.recyclerViewFavourites.setAdapter(herbAdapter);
+
+        // Observe the LiveData from ViewModel
+        favouritesViewModel.getFavoriteHerbsLiveData().observe(getViewLifecycleOwner(), favoriteHerbs -> {
+            herbAdapter.updateData(favoriteHerbs);
+            updateViews(favoriteHerbs.isEmpty());
+        });
+
+        favouritesViewModel.getNoFavoritesLiveData().observe(getViewLifecycleOwner(), this::updateViews);
 
         // Handle click event for each herb item
         herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
@@ -101,39 +108,11 @@ public class FavouritesFragment extends Fragment {
         retrieveFavoriteHerbIds();
 
         // Fetch and update the recycler view
-        fetchAndUpdateFavoriteHerbs();
+        favouritesViewModel.fetchFavoriteHerbs(favoriteHerbIdsList);
     }
 
-    private void fetchAndUpdateFavoriteHerbs() {
-        // Clear existing favorite herb list
-        favoriteHerbList.clear();
-
-        // Firebase reference
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("herbs");
-
-        // Iterate through favorite herb IDs and fetch corresponding herbs from Firebase
-        for (String herbId : favoriteHerbIdsList) {
-            databaseReference.child(herbId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Herb herb = dataSnapshot.getValue(Herb.class);
-                    if (herb != null) {
-                        favoriteHerbList.add(herb);
-                        herbAdapter.notifyDataSetChanged();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle error if needed
-                    Log.e("FetchAndUpdate", "Database error: " + databaseError.getMessage());
-                }
-            });
-        }
-    }
-
-    private void updateViews() {
-        if (favoriteHerbIdsList.isEmpty()) {
+    private void updateViews(boolean noFavorites) {
+        if (noFavorites) {
             binding.textViewNoFavourites.setVisibility(View.VISIBLE);
             binding.recyclerViewFavourites.setVisibility(View.GONE);
         } else {
@@ -152,8 +131,6 @@ public class FavouritesFragment extends Fragment {
             List<String> favoriteHerbIds = new Gson().fromJson(favoriteHerbsJson, new TypeToken<List<String>>() {}.getType());
             favoriteHerbIdsList.addAll(favoriteHerbIds);
         }
-
-        updateViews();
     }
 
     @Override

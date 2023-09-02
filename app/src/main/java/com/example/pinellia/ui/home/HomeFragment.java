@@ -39,6 +39,8 @@ public class HomeFragment extends Fragment {
 
         // Set up the search bar
         setHasOptionsMenu(true);
+
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -46,8 +48,6 @@ public class HomeFragment extends Fragment {
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding.recyclerViewHerbs.setLayoutManager(new LinearLayoutManager(getActivity()));
         herbList = new ArrayList<>();

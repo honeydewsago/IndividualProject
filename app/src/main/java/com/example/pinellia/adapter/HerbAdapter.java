@@ -24,6 +24,13 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
         this.herbList = herbList;
     }
 
+    // Custom method to update the data in the adapter
+    public void updateData(List<Herb> newHerbList) {
+        herbList.clear();
+        herbList.addAll(newHerbList);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public HerbViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -43,14 +50,14 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
         return herbList.size();
     }
 
-    // Click listener interface
-    public interface OnItemClickListener {
-        void onItemClick(Herb herb);
-    }
-
     // Set the click listener
     public void setOnItemClickListener(OnItemClickListener itemClickListener) {
         this.itemClickListener = itemClickListener;
+    }
+
+    // Click listener interface
+    public interface OnItemClickListener {
+        void onItemClick(Herb herb);
     }
 
     public class HerbViewHolder extends RecyclerView.ViewHolder {
