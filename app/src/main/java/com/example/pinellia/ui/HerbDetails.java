@@ -1,5 +1,6 @@
 package com.example.pinellia.ui;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -10,6 +11,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -24,6 +28,7 @@ import com.example.pinellia.adapter.MeridianTropismAdapter;
 import com.example.pinellia.databinding.ActivityHerbDetailsBinding;
 import com.example.pinellia.databinding.ActivitySearchHerbBinding;
 import com.example.pinellia.model.Herb;
+import com.example.pinellia.ui.favourites.FavouritesViewModel;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
@@ -69,22 +74,6 @@ public class HerbDetails extends AppCompatActivity {
             herbId = mHerb.getId();
 
             saveBrowseHistory(herbId); // Save the herbId to history data
-
-            binding.buttonFavorite.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    isFavorite = !isFavorite;
-                    updateFavoriteButtonIcon();
-                    saveFavoriteList();
-
-                    // Display Toast message
-                    if (isFavorite) {
-                        Toast.makeText(HerbDetails.this, "Added to favorites", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(HerbDetails.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
 
             // Load the image from Firebase Storage using Glide
             String imageLink = mHerb.getImageLink();
@@ -151,7 +140,6 @@ public class HerbDetails extends AppCompatActivity {
 
             // Update isFavorite based on saved favorite herb IDs
             updateFavoriteButtonState();
-            updateFavoriteButtonIcon();
         }
     }
 
@@ -211,11 +199,21 @@ public class HerbDetails extends AppCompatActivity {
         isFavorite = favoriteHerbIds.contains(herbId);
     }
 
+    private void toggleFavorite() {
+        isFavorite = !isFavorite;
+        saveFavoriteList();
 
-    private void updateFavoriteButtonIcon() {
-        ImageButton buttonFavorite = findViewById(R.id.buttonFavorite);
+        // Display Toast message
+        if (isFavorite) {
+            Toast.makeText(HerbDetails.this, "Added to favorites", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(HerbDetails.this, "Removed from favorites", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateFavoriteMenuItemIcon(MenuItem menuItem) {
         int iconRes = isFavorite ? R.drawable.baseline_star_50 : R.drawable.baseline_star_border_50;
-        buttonFavorite.setImageResource(iconRes);
+        menuItem.setIcon(iconRes);
     }
 
     private Drawable getBackgroundDrawableForProperty(String property) {
@@ -232,6 +230,30 @@ public class HerbDetails extends AppCompatActivity {
         }
 
         return ContextCompat.getDrawable(this, drawableResId);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.activity_herb_details_menu, menu);
+        MenuItem favoriteMenuItem = menu.findItem(R.id.action_favourite);
+        updateFavoriteMenuItemIcon(favoriteMenuItem);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_favourite) {
+            toggleFavorite();
+            invalidateOptionsMenu(); // Refresh the action bar menu
+            return true;
+        } else if (id == android.R.id.home) {
+            onBackPressed();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
