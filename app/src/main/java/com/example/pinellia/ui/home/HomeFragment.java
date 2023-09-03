@@ -49,6 +49,10 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        // Hide the RecyclerView and show the TextView initially
+        binding.recyclerViewHerbs.setVisibility(View.GONE);
+        binding.textViewNoHerbs.setVisibility(View.VISIBLE);
+
         binding.recyclerViewHerbs.setLayoutManager(new LinearLayoutManager(getActivity()));
         herbList = new ArrayList<>();
         herbAdapter = new HerbAdapter(herbList);
@@ -56,9 +60,8 @@ public class HomeFragment extends Fragment {
 
         homeViewModel.getHerbData().observe(getViewLifecycleOwner(), herbs -> {
             // Update the RecyclerView when data changes
-            herbList.clear();
-            herbList.addAll(herbs);
-            herbAdapter.notifyDataSetChanged();
+            herbAdapter.updateData(herbs);
+            updateViews(herbs.isEmpty());
         });
 
         // Handle click event for each herb item
@@ -78,6 +81,16 @@ public class HomeFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void updateViews(boolean noHerbs) {
+        if (noHerbs) {
+            binding.textViewNoHerbs.setVisibility(View.VISIBLE);
+            binding.recyclerViewHerbs.setVisibility(View.GONE);
+        } else {
+            binding.textViewNoHerbs.setVisibility(View.GONE);
+            binding.recyclerViewHerbs.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
