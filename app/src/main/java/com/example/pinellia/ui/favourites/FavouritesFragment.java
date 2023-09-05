@@ -4,14 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -25,19 +23,12 @@ import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentFavouritesBinding;
 import com.example.pinellia.model.Herb;
 import com.example.pinellia.ui.BrowseHistoryActivity;
-import com.example.pinellia.ui.HerbDetails;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.example.pinellia.ui.herbDetails.HerbDetails;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class FavouritesFragment extends Fragment {
 
@@ -55,7 +46,7 @@ public class FavouritesFragment extends Fragment {
         // Set up the search bar
         setHasOptionsMenu(true);
 
-        favouritesViewModel= new ViewModelProvider(this).get(FavouritesViewModel.class);
+        favouritesViewModel = new ViewModelProvider(this).get(FavouritesViewModel.class);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,

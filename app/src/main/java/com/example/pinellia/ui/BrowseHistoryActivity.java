@@ -4,18 +4,16 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.example.pinellia.R;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.ActivityBrowseHistoryBinding;
-import com.example.pinellia.databinding.ActivitySearchHerbBinding;
 import com.example.pinellia.model.Herb;
+import com.example.pinellia.ui.herbDetails.HerbDetails;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
