@@ -21,6 +21,7 @@ import com.example.pinellia.R;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentFavouritesBinding;
 import com.example.pinellia.model.Herb;
+import com.example.pinellia.ui.AboutUsActivity;
 import com.example.pinellia.ui.history.BrowseHistoryActivity;
 import com.example.pinellia.ui.herbDetails.HerbDetails;
 
@@ -137,8 +138,9 @@ public class FavouritesFragment extends Fragment {
             Toast.makeText(requireContext(), "Settings clicked", Toast.LENGTH_SHORT).show();
             return true;
         } else if (id == R.id.action_about) {
-            // Handle About click
-            Toast.makeText(requireContext(), "About clicked", Toast.LENGTH_SHORT).show();
+            // Launch AboutUsActivity
+            Intent intent = new Intent(requireContext(), AboutUsActivity.class);
+            startActivity(intent);
             return true;
         }
 
