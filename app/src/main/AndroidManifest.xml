@@ -22,7 +22,7 @@
             android:name=".ui.recognition.RecognitionResultsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.BrowseHistoryActivity"
+            android:name=".ui.history.BrowseHistoryActivity"
             android:exported="false" />
         <activity
             android:name=".ui.searchHerb.SearchHerbActivity"

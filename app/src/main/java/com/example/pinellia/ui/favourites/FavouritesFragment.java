@@ -2,7 +2,6 @@ package com.example.pinellia.ui.favourites;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,10 +21,8 @@ import com.example.pinellia.R;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentFavouritesBinding;
 import com.example.pinellia.model.Herb;
-import com.example.pinellia.ui.BrowseHistoryActivity;
+import com.example.pinellia.ui.history.BrowseHistoryActivity;
 import com.example.pinellia.ui.herbDetails.HerbDetails;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
