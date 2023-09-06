@@ -62,7 +62,15 @@ public class FavouritesFragment extends Fragment {
         favoriteHerbIdsList = new ArrayList<>();
 
         // Retrieve favorite herb IDs from SharedPreferences and populate the list
-        retrieveFavoriteHerbIds();
+        favouritesViewModel.retrieveFavoriteHerbIds(requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE), KEY_FAVORITE_HERBS);
+
+        // Observe the LiveData from ViewModel to retrieve favorite herb IDs
+        favouritesViewModel.getFavoriteHerbIdsLiveData().observe(getViewLifecycleOwner(), favoriteHerbIds -> {
+            // Handle the retrieved favorite herb IDs
+            favoriteHerbIdsList.clear();
+            favoriteHerbIdsList.addAll(favoriteHerbIds);
+
+        });
 
         // Set up RecyclerView to display favorite herbs
         binding.recyclerViewFavourites.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -96,7 +104,7 @@ public class FavouritesFragment extends Fragment {
         super.onResume();
 
         // Retrieve the latest favorite herb IDs from SharedPreferences
-        retrieveFavoriteHerbIds();
+        favouritesViewModel.retrieveFavoriteHerbIds(requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE), KEY_FAVORITE_HERBS);
 
         // Fetch and update the recycler view
         favouritesViewModel.fetchFavoriteHerbs(favoriteHerbIdsList);
@@ -109,18 +117,6 @@ public class FavouritesFragment extends Fragment {
         } else {
             binding.textViewNoFavourites.setVisibility(View.GONE);
             binding.recyclerViewFavourites.setVisibility(View.VISIBLE);
-        }
-    }
-
-    private void retrieveFavoriteHerbIds() {
-        SharedPreferences preferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String favoriteHerbsJson = preferences.getString(KEY_FAVORITE_HERBS, null);
-
-        favoriteHerbIdsList.clear();
-
-        if (favoriteHerbsJson != null) {
-            List<String> favoriteHerbIds = new Gson().fromJson(favoriteHerbsJson, new TypeToken<List<String>>() {}.getType());
-            favoriteHerbIdsList.addAll(favoriteHerbIds);
         }
     }
 
