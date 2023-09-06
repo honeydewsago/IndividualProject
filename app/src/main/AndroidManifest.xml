@@ -19,6 +19,9 @@
         android:theme="@style/Theme.Pinellia"
         tools:targetApi="31">
         <activity
+            android:name=".ui.AboutUsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.recognition.RecognitionResultsActivity"
             android:exported="false" />
         <activity
