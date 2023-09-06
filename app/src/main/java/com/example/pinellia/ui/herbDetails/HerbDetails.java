@@ -67,7 +67,7 @@ public class HerbDetails extends AppCompatActivity {
         // Initialize herbId with the ID of the current herb
         herbId = mHerb.getId();
 
-        saveBrowseHistory(herbId); // Save the herbId to history data
+        herbDetailsViewModel.saveBrowseHistory(herbId, getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_HISTORY); // Save the herbId to history data
 
         // Load the image from Firebase Storage using Glide
         String imageLink = mHerb.getImageLink();
@@ -85,8 +85,17 @@ public class HerbDetails extends AppCompatActivity {
         // Display herb data
         binding.textViewNameScientific.setText(mHerb.getNameScientific());
         binding.textViewNameCN.setText(mHerb.getNameCN()+" "+mHerb.getNamePinyin());
+        binding.textViewStorage.setText(mHerb.getStorage());
+        binding.textViewCharacteristics.setText(mHerb.getCharacteristics());
+        binding.textViewPlaceOrigin.setText(mHerb.getPlaceOfOrigin());
+        binding.textViewMedicinePart.setText(mHerb.getMedicinePart());
+        binding.textViewMethod.setText(mHerb.getMethod());
+        binding.textViewEffect.setText(mHerb.getEffect());
+        binding.textViewUsage.setText(mHerb.getUsage());
+        binding.textViewDosage.setText(mHerb.getDosage());
+        binding.textViewProhibition.setText(mHerb.getProhibition());
 
-        // Update the color of the box based on herb property
+        // Display different box color for different herb property
         Drawable backgroundDrawable = getBackgroundDrawableForProperty(mHerb.getProperty());
         binding.herbPropertyLayout.setBackground(backgroundDrawable);
 
@@ -109,12 +118,13 @@ public class HerbDetails extends AppCompatActivity {
 
         binding.recyclerViewFlavour.setLayoutManager(layoutManager2);
 
-        // Use meridian tropism adapter to display flavour and set it to the RecyclerView
+        // Create another meridian tropism adapter to display flavour and set it to the RecyclerView
         MeridianTropismAdapter flavourAdapter = new MeridianTropismAdapter(mHerb.getFlavour());
         binding.recyclerViewFlavour.setAdapter(flavourAdapter);
 
         binding.textViewProperty.setText(mHerb.getProperty());
 
+        // Display herb toxicology
         if (mHerb.getToxicology().isEmpty()) {
             binding.textViewToxicology.setText(R.string.not_identified);
         }
@@ -122,23 +132,13 @@ public class HerbDetails extends AppCompatActivity {
             binding.textViewToxicology.setText(mHerb.getToxicology());
         }
 
-        binding.textViewStorage.setText(mHerb.getStorage());
-        binding.textViewCharacteristics.setText(mHerb.getCharacteristics());
-        binding.textViewPlaceOrigin.setText(mHerb.getPlaceOfOrigin());
-        binding.textViewMedicinePart.setText(mHerb.getMedicinePart());
-        binding.textViewMethod.setText(mHerb.getMethod());
-        binding.textViewEffect.setText(mHerb.getEffect());
-        binding.textViewUsage.setText(mHerb.getUsage());
-        binding.textViewDosage.setText(mHerb.getDosage());
-        binding.textViewProhibition.setText(mHerb.getProhibition());
-
         // Update isFavorite based on saved favorite herb IDs
-        updateFavoriteButtonState();
+        herbDetailsViewModel.updateFavoriteButtonState(herbId, getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_FAVORITE_HERBS);
 
         // Observe the isFavorite LiveData
         herbDetailsViewModel.getIsFavoriteLiveData().observe(this, isFavorite -> {
             this.isFavorite = isFavorite;
-            saveFavoriteList();
+            herbDetailsViewModel.saveFavoriteList(herbId, isFavorite, getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_FAVORITE_HERBS);
         });
 
         herbDetailsViewModel.getToastMessageLiveData().observe(this, message -> {
@@ -147,64 +147,6 @@ public class HerbDetails extends AppCompatActivity {
             }
         });
 
-    }
-
-    private void saveBrowseHistory(String herbId) {
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String historyHerbsJson = preferences.getString(KEY_HISTORY, null);
-
-        List<String> historyHerbIds = new ArrayList<>();
-
-        if (historyHerbsJson != null) {
-            historyHerbIds = new Gson().fromJson(historyHerbsJson, new TypeToken<List<String>>() {}.getType());
-        }
-
-        // Remove the herbId if it already exists to ensure uniqueness
-        historyHerbIds.remove(herbId);
-
-        // Add the herbId at the beginning to maintain order
-        historyHerbIds.add(0, herbId);
-
-        String updatedHistoryHerbsJson = new Gson().toJson(historyHerbIds);
-        preferences.edit().putString(KEY_HISTORY, updatedHistoryHerbsJson).apply();
-    }
-
-
-    private void saveFavoriteList() {
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String favoriteHerbsJson = preferences.getString(KEY_FAVORITE_HERBS, null);
-
-        List<String> favoriteHerbIds = new ArrayList<>();
-
-        if (favoriteHerbsJson != null) {
-            favoriteHerbIds = new Gson().fromJson(favoriteHerbsJson, new TypeToken<List<String>>() {}.getType());
-        }
-
-        if (isFavorite) {
-            if (!favoriteHerbIds.contains(herbId)) {
-                favoriteHerbIds.add(0, herbId); // Add at the beginning to maintain order
-            }
-        } else {
-            favoriteHerbIds.remove(herbId);
-        }
-
-        String updatedFavoriteHerbsJson = new Gson().toJson(favoriteHerbIds);
-        preferences.edit().putString(KEY_FAVORITE_HERBS, updatedFavoriteHerbsJson).apply();
-
-    }
-
-    private void updateFavoriteButtonState() {
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String favoriteHerbsJson = preferences.getString(KEY_FAVORITE_HERBS, null);
-
-        List<String> favoriteHerbIds = new ArrayList<>();
-
-        if (favoriteHerbsJson != null) {
-            favoriteHerbIds.addAll(new Gson().fromJson(favoriteHerbsJson, new TypeToken<List<String>>() {}.getType()));
-        }
-
-        isFavorite = favoriteHerbIds.contains(herbId);
-        herbDetailsViewModel.setIsFavorite(isFavorite);
     }
 
     private void updateFavoriteMenuItemIcon(MenuItem menuItem) {
