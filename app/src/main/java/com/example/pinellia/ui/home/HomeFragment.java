@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.pinellia.ui.HerbDetails;
+import com.example.pinellia.ui.herbDetails.HerbDetails;
 import com.example.pinellia.R;
 import com.example.pinellia.ui.searchHerb.SearchHerbActivity;
 import com.example.pinellia.adapter.HerbAdapter;
@@ -39,6 +39,8 @@ public class HomeFragment extends Fragment {
 
         // Set up the search bar
         setHasOptionsMenu(true);
+
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -47,7 +49,9 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        // Hide the RecyclerView and show the TextView initially
+        binding.recyclerViewHerbs.setVisibility(View.GONE);
+        binding.textViewNoHerbs.setVisibility(View.VISIBLE);
 
         binding.recyclerViewHerbs.setLayoutManager(new LinearLayoutManager(getActivity()));
         herbList = new ArrayList<>();
@@ -56,9 +60,8 @@ public class HomeFragment extends Fragment {
 
         homeViewModel.getHerbData().observe(getViewLifecycleOwner(), herbs -> {
             // Update the RecyclerView when data changes
-            herbList.clear();
-            herbList.addAll(herbs);
-            herbAdapter.notifyDataSetChanged();
+            herbAdapter.updateData(herbs);
+            updateViews(herbs.isEmpty());
         });
 
         // Handle click event for each herb item
@@ -78,6 +81,16 @@ public class HomeFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void updateViews(boolean noHerbs) {
+        if (noHerbs) {
+            binding.textViewNoHerbs.setVisibility(View.VISIBLE);
+            binding.recyclerViewHerbs.setVisibility(View.GONE);
+        } else {
+            binding.textViewNoHerbs.setVisibility(View.GONE);
+            binding.recyclerViewHerbs.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

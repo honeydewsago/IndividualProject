@@ -1,9 +1,13 @@
 package com.example.pinellia.ui.recognition;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +37,17 @@ import java.util.concurrent.Executors;
 
 public class RecognitionFragment extends Fragment {
 
+    private static final int IMAGE_PICK_REQUEST_CODE = 100;
     private FragmentRecognitionBinding binding;
+
+    private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
+        @Override
+        public void onActivityResult(Boolean result) {
+            if (result) {
+                startCamera();
+            }
+        }
+    });
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -51,16 +65,55 @@ public class RecognitionFragment extends Fragment {
         } else {
             startCamera();
         }
+
+        binding.uploadImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Check for permission to read external storage
+                if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    // Request permission to read external storage
+                    activityResultLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
+                } else {
+                    // Launch the image picker intent
+                    launchImagePicker();
+                }
+            }
+        });
     }
 
-    private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
-        @Override
-        public void onActivityResult(Boolean result) {
-            if (result) {
-                startCamera();
-            }
+    private void launchImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(intent, IMAGE_PICK_REQUEST_CODE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == IMAGE_PICK_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
+            // Handle the selected image URI
+            Uri selectedImageUri = data.getData();
+
+            // Get the path from the image URI
+            String imagePath = getRealPathFromURI(selectedImageUri);
+
+            // Launch the Recognition Results Activity with the image path
+            launchRecognitionResultsActivity(imagePath);
         }
-    });
+    }
+
+    private String getRealPathFromURI(Uri contentUri) {
+        String[] projection = {MediaStore.Images.Media.DATA};
+        Cursor cursor = requireContext().getContentResolver().query(contentUri, projection, null, null, null);
+        if (cursor != null) {
+            int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            cursor.moveToFirst();
+            String path = cursor.getString(columnIndex);
+            cursor.close();
+            return path;
+        }
+        return contentUri.getPath();
+    }
 
     public void startCamera() {
         int aspectRatio = aspectRatio(binding.cameraPreviewView.getWidth(), binding.cameraPreviewView.getHeight());

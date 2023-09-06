@@ -1,21 +1,20 @@
-package com.example.pinellia.ui;
+package com.example.pinellia.ui.history;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
-import com.example.pinellia.R;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.ActivityBrowseHistoryBinding;
-import com.example.pinellia.databinding.ActivitySearchHerbBinding;
 import com.example.pinellia.model.Herb;
+import com.example.pinellia.ui.herbDetails.HerbDetails;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +31,7 @@ public class BrowseHistoryActivity extends AppCompatActivity {
     private static final String PREFS_NAME = "AppPreferences";
     private static final String KEY_HISTORY = "historyHerbIds";
     private ActivityBrowseHistoryBinding binding;
+    private BrowseHistoryViewModel historyViewModel;
     private HerbAdapter herbAdapter;
     private List<String> historyHerbIdsList;
     private List<Herb> historyHerbList;
@@ -43,6 +43,8 @@ public class BrowseHistoryActivity extends AppCompatActivity {
         binding = ActivityBrowseHistoryBinding.inflate(getLayoutInflater());
         View root = binding.getRoot();
         setContentView(root);
+
+        historyViewModel = new ViewModelProvider(this).get(BrowseHistoryViewModel.class);
 
         // Enable action bar title
         if (getSupportActionBar() != null) {
@@ -58,7 +60,7 @@ public class BrowseHistoryActivity extends AppCompatActivity {
         historyHerbList = new ArrayList<>();
 
         // Retrieve history herb IDs from SharedPreferences and populate the list
-        retrieveHistoryHerbIds();
+        historyViewModel.retrieveHistoryHerbIds(getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_HISTORY);
 
         // Set up RecyclerView to display favorite herbs
         binding.recyclerViewHistory.setLayoutManager(new LinearLayoutManager(this));
@@ -76,6 +78,20 @@ public class BrowseHistoryActivity extends AppCompatActivity {
             }
         });
 
+        // Observe the LiveData from ViewModel to retrieve history herb IDs
+        historyViewModel.getHistoryHerbIdsLiveData().observe(this, historyHerbIds -> {
+            // Handle the retrieved history herb IDs here
+            historyHerbIdsList.clear();
+            historyHerbIdsList.addAll(historyHerbIds);
+        });
+
+        // Observe the LiveData from ViewModel to update the UI with fetched history herbs
+        historyViewModel.getHistoryHerbListLiveData().observe(this, historyHerbs -> {
+            // Handle the fetched history herb list here
+            herbAdapter.updateData(historyHerbs);
+            updateViews(historyHerbs.isEmpty());
+        });
+
     }
 
     @Override
@@ -83,58 +99,14 @@ public class BrowseHistoryActivity extends AppCompatActivity {
         super.onResume();
 
         // Retrieve the latest history herb IDs from SharedPreferences
-        retrieveHistoryHerbIds();
+        historyViewModel.retrieveHistoryHerbIds(getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_HISTORY);
 
         // Fetch and update the recycler view
-        fetchHistoryHerbs();
+        historyViewModel.fetchHistoryHerbs(historyHerbIdsList);
     }
 
-
-    private void fetchHistoryHerbs() {
-        // Clear existing history herb list
-        historyHerbList.clear();
-
-        // Firebase reference
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("herbs");
-
-        // Iterate through history herb IDs and fetch corresponding herbs from Firebase
-        for (String herbId : historyHerbIdsList) {
-            databaseReference.child(herbId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Herb herb = dataSnapshot.getValue(Herb.class);
-                    if (herb != null) {
-                        historyHerbList.add(herb);
-                        herbAdapter.notifyDataSetChanged();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle error if needed
-                    Log.e("FetchHistory", "Database error: " + databaseError.getMessage());
-                }
-            });
-        }
-    }
-
-
-    private void retrieveHistoryHerbIds() {
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String historyHerbsJson = preferences.getString(KEY_HISTORY, null);
-
-        historyHerbIdsList.clear();
-
-        if (historyHerbsJson != null) {
-            List<String> historyHerbIds = new Gson().fromJson(historyHerbsJson, new TypeToken<List<String>>() {}.getType());
-            historyHerbIdsList.addAll(historyHerbIds);
-        }
-
-        updateViews();
-    }
-
-    private void updateViews() {
-        if (historyHerbIdsList.isEmpty()) {
+    private void updateViews(boolean noHistory) {
+        if (noHistory) {
             binding.textViewNoHistory.setVisibility(View.VISIBLE);
             binding.recyclerViewHistory.setVisibility(View.GONE);
         } else {

@@ -14,7 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.pinellia.databinding.ActivitySearchHerbBinding;
-import com.example.pinellia.ui.HerbDetails;
+import com.example.pinellia.ui.herbDetails.HerbDetails;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.model.Herb;
 

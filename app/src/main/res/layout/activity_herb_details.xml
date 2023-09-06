@@ -5,323 +5,300 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="vertical"
-    tools:context=".ui.HerbDetails">
+    tools:context=".ui.herbDetails.HerbDetails">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:padding="20dp">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/imageViewHerb"
+            android:layout_width="280dp"
+            android:layout_height="180dp"
+            android:layout_gravity="center_horizontal"
+            app:srcCompat="@drawable/bg_light_green_gradient"
+            android:layout_marginBottom="20dp"
+            android:scaleType="centerCrop"/>
 
-            <ImageView
-                android:id="@+id/imageViewHerb"
-                android:layout_width="280dp"
-                android:layout_height="180dp"
-                app:srcCompat="@drawable/bg_light_green_gradient"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="24dp"
-                android:scaleType="centerCrop"/>
+        <TextView
+            android:id="@+id/textViewNameScientificTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Scientific Name"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
-            <ImageButton
-                android:id="@+id/buttonFavorite"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="?android:attr/selectableItemBackground"
-                android:src="@drawable/baseline_star_border_50"
-                android:layout_alignParentEnd="true"/>
-        </RelativeLayout>
+        <TextView
+            android:id="@+id/textViewNameScientific"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Scientific Name"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textViewNameCNTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Chinese Name"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewNameCN"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Chinese Name"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textViewPropertyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Property"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/herbPropertyLayout"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
+            android:orientation="horizontal"
+            android:background="@drawable/rounded_green_box"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:layout_marginBottom="20dp">
 
             <TextView
-                android:id="@+id/textViewNameScientificTitle"
+                android:id="@+id/textViewProperty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Scientific Name"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewNameScientific"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Scientific Name"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/textViewNameCNTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Chinese Name"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewNameCN"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Chinese Name"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/textViewPropertyTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
+                android:textColor="@android:color/white"
                 android:text="Property"
                 android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <LinearLayout
-                android:id="@+id/herbPropertyLayout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:background="@drawable/rounded_green_box"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp"
-                android:layout_marginBottom="20dp">
-
-                <TextView
-                    android:id="@+id/textViewProperty"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@android:color/white"
-                    android:text="Property"
-                    android:textSize="16sp"
-                    android:textStyle="bold"/>
-            </LinearLayout>
-
-            <TextView
-                android:id="@+id/textViewMeridianTropismTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Meridian Tropism"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewMeridianTropism"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp"/>
-
-            <TextView
-                android:id="@+id/textViewFlavorTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Flavor"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewFlavour"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp" />
-
-            <TextView
-                android:id="@+id/textViewToxicologyTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Toxicology"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewToxicology"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Toxicology"
-                android:textStyle="italic"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/textViewStorageTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Storage"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewStorage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Storage"
-                android:textSize="16sp"
-                android:justificationMode="inter_word"/>
-
-            <TextView
-                android:id="@+id/textViewPlaceOriginTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Place Of Origin"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewPlaceOrigin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Place Of Origin"
-                android:textSize="16sp"
-                android:justificationMode="inter_word"/>
-
-            <TextView
-                android:id="@+id/textViewCharacteristicsTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Characteristics"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewCharacteristics"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Characteristics"
-                android:textSize="16sp"
-                android:justificationMode="inter_word"/>
-
-            <TextView
-                android:id="@+id/textViewMedicinePartTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Medicine Part"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewMedicinePart"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Medicine Part"
-                android:textSize="16sp"
-                android:justificationMode="inter_word"/>
-
-            <TextView
-                android:id="@+id/textViewMethodTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Method"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewMethod"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Method"
-                android:textSize="16sp"
-                android:justificationMode="inter_word"/>
-
-            <TextView
-                android:id="@+id/textViewEffectTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Effect"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewEffect"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Effect"
-                android:textSize="16sp"
-                android:justificationMode="inter_word"/>
-
-            <TextView
-                android:id="@+id/textViewUsageTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Usage"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-
-            <TextView
-                android:id="@+id/textViewUsage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Usage"
-                android:textSize="16sp"
-                android:justificationMode="inter_word" />
-
-            <TextView
-                android:id="@+id/textViewDosageTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Dosage"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/textViewDosage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Dosage"
-                android:textSize="16sp"
-                android:justificationMode="inter_word" />
-
-            <TextView
-                android:id="@+id/textViewProhibitionTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:text="Prohibition"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@color/red"/>
-
-
-            <TextView
-                android:id="@+id/textViewProhibition"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp"
-                android:text="Prohibition"
-                android:textSize="16sp"
-                android:justificationMode="inter_word"/>
-
+                android:textStyle="bold"/>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textViewMeridianTropismTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Meridian Tropism"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewMeridianTropism"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp"/>
+
+        <TextView
+            android:id="@+id/textViewFlavorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Flavor"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewFlavour"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp" />
+
+        <TextView
+            android:id="@+id/textViewToxicologyTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Toxicology"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewToxicology"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Toxicology"
+            android:textStyle="italic"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textViewStorageTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Storage"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewStorage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Storage"
+            android:textSize="16sp"
+            android:justificationMode="inter_word"/>
+
+        <TextView
+            android:id="@+id/textViewPlaceOriginTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Place Of Origin"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewPlaceOrigin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Place Of Origin"
+            android:textSize="16sp"
+            android:justificationMode="inter_word"/>
+
+        <TextView
+            android:id="@+id/textViewCharacteristicsTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Characteristics"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewCharacteristics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Characteristics"
+            android:textSize="16sp"
+            android:justificationMode="inter_word"/>
+
+        <TextView
+            android:id="@+id/textViewMedicinePartTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Medicine Part"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewMedicinePart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Medicine Part"
+            android:textSize="16sp"
+            android:justificationMode="inter_word"/>
+
+        <TextView
+            android:id="@+id/textViewMethodTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Method"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewMethod"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Method"
+            android:textSize="16sp"
+            android:justificationMode="inter_word"/>
+
+        <TextView
+            android:id="@+id/textViewEffectTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Effect"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewEffect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Effect"
+            android:textSize="16sp"
+            android:justificationMode="inter_word"/>
+
+        <TextView
+            android:id="@+id/textViewUsageTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Usage"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+
+        <TextView
+            android:id="@+id/textViewUsage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Usage"
+            android:textSize="16sp"
+            android:justificationMode="inter_word" />
+
+        <TextView
+            android:id="@+id/textViewDosageTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Dosage"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/textViewDosage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Dosage"
+            android:textSize="16sp"
+            android:justificationMode="inter_word" />
+
+        <TextView
+            android:id="@+id/textViewProhibitionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:text="Prohibition"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/red"/>
+
+        <TextView
+            android:id="@+id/textViewProhibition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="Prohibition"
+            android:textSize="16sp"
+            android:justificationMode="inter_word"/>
 
     </LinearLayout>
 

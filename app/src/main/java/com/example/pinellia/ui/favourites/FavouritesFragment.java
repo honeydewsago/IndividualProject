@@ -2,16 +2,13 @@ package com.example.pinellia.ui.favourites;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -24,28 +21,20 @@ import com.example.pinellia.R;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentFavouritesBinding;
 import com.example.pinellia.model.Herb;
-import com.example.pinellia.ui.BrowseHistoryActivity;
-import com.example.pinellia.ui.HerbDetails;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import com.example.pinellia.ui.AboutUsActivity;
+import com.example.pinellia.ui.history.BrowseHistoryActivity;
+import com.example.pinellia.ui.herbDetails.HerbDetails;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class FavouritesFragment extends Fragment {
 
-    private FragmentFavouritesBinding binding;
     private static final String PREFS_NAME = "AppPreferences";
     private static final String KEY_FAVORITE_HERBS = "favoriteHerbIds";
+    private FragmentFavouritesBinding binding;
+    private FavouritesViewModel favouritesViewModel;
     private List<String> favoriteHerbIdsList;
-    private List<Herb> favoriteHerbList;
     private HerbAdapter herbAdapter;
 
     @Override
@@ -54,12 +43,12 @@ public class FavouritesFragment extends Fragment {
 
         // Set up the search bar
         setHasOptionsMenu(true);
+
+        favouritesViewModel = new ViewModelProvider(this).get(FavouritesViewModel.class);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-
-        FavouritesViewModel favouritesViewModel = new ViewModelProvider(this).get(FavouritesViewModel.class);
 
         binding = FragmentFavouritesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -69,15 +58,30 @@ public class FavouritesFragment extends Fragment {
         binding.textViewNoFavourites.setVisibility(View.VISIBLE);
 
         favoriteHerbIdsList = new ArrayList<>();
-        favoriteHerbList = new ArrayList<>();
 
         // Retrieve favorite herb IDs from SharedPreferences and populate the list
-        retrieveFavoriteHerbIds();
+        favouritesViewModel.retrieveFavoriteHerbIds(requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE), KEY_FAVORITE_HERBS);
+
+        // Observe the LiveData from ViewModel to retrieve favorite herb IDs
+        favouritesViewModel.getFavoriteHerbIdsLiveData().observe(getViewLifecycleOwner(), favoriteHerbIds -> {
+            // Handle the retrieved favorite herb IDs
+            favoriteHerbIdsList.clear();
+            favoriteHerbIdsList.addAll(favoriteHerbIds);
+
+        });
 
         // Set up RecyclerView to display favorite herbs
         binding.recyclerViewFavourites.setLayoutManager(new LinearLayoutManager(getActivity()));
-        herbAdapter = new HerbAdapter(favoriteHerbList);
+        herbAdapter = new HerbAdapter(new ArrayList<>());
         binding.recyclerViewFavourites.setAdapter(herbAdapter);
+
+        // Observe the LiveData from ViewModel
+        favouritesViewModel.getFavoriteHerbsLiveData().observe(getViewLifecycleOwner(), favoriteHerbs -> {
+            herbAdapter.updateData(favoriteHerbs);
+            updateViews(favoriteHerbs.isEmpty());
+        });
+
+        favouritesViewModel.getNoFavoritesLiveData().observe(getViewLifecycleOwner(), this::updateViews);
 
         // Handle click event for each herb item
         herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
@@ -98,62 +102,20 @@ public class FavouritesFragment extends Fragment {
         super.onResume();
 
         // Retrieve the latest favorite herb IDs from SharedPreferences
-        retrieveFavoriteHerbIds();
+        favouritesViewModel.retrieveFavoriteHerbIds(requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE), KEY_FAVORITE_HERBS);
 
         // Fetch and update the recycler view
-        fetchAndUpdateFavoriteHerbs();
+        favouritesViewModel.fetchFavoriteHerbs(favoriteHerbIdsList);
     }
 
-    private void fetchAndUpdateFavoriteHerbs() {
-        // Clear existing favorite herb list
-        favoriteHerbList.clear();
-
-        // Firebase reference
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("herbs");
-
-        // Iterate through favorite herb IDs and fetch corresponding herbs from Firebase
-        for (String herbId : favoriteHerbIdsList) {
-            databaseReference.child(herbId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Herb herb = dataSnapshot.getValue(Herb.class);
-                    if (herb != null) {
-                        favoriteHerbList.add(herb);
-                        herbAdapter.notifyDataSetChanged();
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle error if needed
-                    Log.e("FetchAndUpdate", "Database error: " + databaseError.getMessage());
-                }
-            });
-        }
-    }
-
-    private void updateViews() {
-        if (favoriteHerbIdsList.isEmpty()) {
+    private void updateViews(boolean noFavorites) {
+        if (noFavorites) {
             binding.textViewNoFavourites.setVisibility(View.VISIBLE);
             binding.recyclerViewFavourites.setVisibility(View.GONE);
         } else {
             binding.textViewNoFavourites.setVisibility(View.GONE);
             binding.recyclerViewFavourites.setVisibility(View.VISIBLE);
         }
-    }
-
-    private void retrieveFavoriteHerbIds() {
-        SharedPreferences preferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
-        String favoriteHerbsJson = preferences.getString(KEY_FAVORITE_HERBS, null);
-
-        favoriteHerbIdsList.clear();
-
-        if (favoriteHerbsJson != null) {
-            List<String> favoriteHerbIds = new Gson().fromJson(favoriteHerbsJson, new TypeToken<List<String>>() {}.getType());
-            favoriteHerbIdsList.addAll(favoriteHerbIds);
-        }
-
-        updateViews();
     }
 
     @Override
@@ -176,8 +138,9 @@ public class FavouritesFragment extends Fragment {
             Toast.makeText(requireContext(), "Settings clicked", Toast.LENGTH_SHORT).show();
             return true;
         } else if (id == R.id.action_about) {
-            // Handle About click
-            Toast.makeText(requireContext(), "About clicked", Toast.LENGTH_SHORT).show();
+            // Launch AboutUsActivity
+            Intent intent = new Intent(requireContext(), AboutUsActivity.class);
+            startActivity(intent);
             return true;
         }
 
