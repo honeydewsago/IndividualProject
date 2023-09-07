@@ -7,6 +7,11 @@
         android:orderInCategory="100"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_acknowledge"
+        android:title="User Acknowledgement"
+        android:orderInCategory="200"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_settings"
         android:title="Settings"
         android:orderInCategory="200"
