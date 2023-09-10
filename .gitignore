@@ -16,3 +16,4 @@ local.properties
 /app/src/main/assets/model.tflite
 /app/src/main/assets/trained_model.tflite
 /app/src/main/assets/model8.tflite
+/app/src/main/assets/model5.tflite

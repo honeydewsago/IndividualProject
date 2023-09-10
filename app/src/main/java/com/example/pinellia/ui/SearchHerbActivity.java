@@ -1,4 +1,4 @@
-package com.example.pinellia.ui.searchHerb;
+package com.example.pinellia.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
@@ -14,7 +14,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.example.pinellia.databinding.ActivitySearchHerbBinding;
-import com.example.pinellia.ui.herbDetails.HerbDetails;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.model.Herb;
 
@@ -55,8 +54,8 @@ public class SearchHerbActivity extends AppCompatActivity {
         searchResultsAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Herb herb) {
-                // Handle item click in search results to launch HerbDetails activity
-                Intent intent = new Intent(SearchHerbActivity.this, HerbDetails.class);
+                // Handle item click in search results to launch HerbDetailsActivity activity
+                Intent intent = new Intent(SearchHerbActivity.this, HerbDetailsActivity.class);
                 intent.putExtra("herb", herb);
                 startActivity(intent);
             }

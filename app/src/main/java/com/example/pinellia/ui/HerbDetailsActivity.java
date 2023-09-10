@@ -1,11 +1,10 @@
-package com.example.pinellia.ui.herbDetails;
+package com.example.pinellia.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.Menu;
@@ -20,17 +19,11 @@ import com.example.pinellia.R;
 import com.example.pinellia.adapter.MeridianTropismAdapter;
 import com.example.pinellia.databinding.ActivityHerbDetailsBinding;
 import com.example.pinellia.model.Herb;
-import com.example.pinellia.ui.favourites.FavouritesViewModel;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class HerbDetails extends AppCompatActivity {
+public class HerbDetailsActivity extends AppCompatActivity {
 
     private static final String PREFS_NAME = "AppPreferences";
     private static final String KEY_FAVORITE_HERBS = "favoriteHerbIds";

@@ -24,8 +24,8 @@ import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentFavouritesBinding;
 import com.example.pinellia.model.Herb;
 import com.example.pinellia.ui.AboutUsActivity;
-import com.example.pinellia.ui.history.BrowseHistoryActivity;
-import com.example.pinellia.ui.herbDetails.HerbDetails;
+import com.example.pinellia.ui.BrowseHistoryActivity;
+import com.example.pinellia.ui.HerbDetailsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,8 +89,8 @@ public class FavouritesFragment extends Fragment {
         herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Herb herb) {
-                // Launch HerbDetails activity and pass the clicked herb data
-                Intent intent = new Intent(getActivity(), HerbDetails.class);
+                // Launch HerbDetailsActivity activity and pass the clicked herb data
+                Intent intent = new Intent(getActivity(), HerbDetailsActivity.class);
                 intent.putExtra("herb", herb);
                 startActivity(intent);
             }

@@ -1,4 +1,4 @@
-package com.example.pinellia.ui.searchHerb;
+package com.example.pinellia.ui;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

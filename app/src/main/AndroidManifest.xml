@@ -25,13 +25,13 @@
             android:name=".ui.recognition.RecognitionResultsActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.history.BrowseHistoryActivity"
+            android:name=".ui.BrowseHistoryActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.searchHerb.SearchHerbActivity"
+            android:name=".ui.SearchHerbActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.herbDetails.HerbDetails"
+            android:name=".ui.HerbDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".SplashActivity"

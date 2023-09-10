@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.history.BrowseHistoryActivity"
+    tools:context=".ui.BrowseHistoryActivity"
     android:background="@drawable/bg_light_green_gradient">
 
     <androidx.recyclerview.widget.RecyclerView

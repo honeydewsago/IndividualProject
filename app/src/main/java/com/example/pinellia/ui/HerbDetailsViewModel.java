@@ -1,4 +1,4 @@
-package com.example.pinellia.ui.herbDetails;
+package com.example.pinellia.ui;
 
 import android.content.SharedPreferences;
 
