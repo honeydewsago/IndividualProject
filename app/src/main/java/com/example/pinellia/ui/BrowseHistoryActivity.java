@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.pinellia.adapter.HerbAdapter;
+import com.example.pinellia.databinding.ActivityBrowseHistoryBinding;
 import com.example.pinellia.model.Herb;
 
 import java.util.ArrayList;

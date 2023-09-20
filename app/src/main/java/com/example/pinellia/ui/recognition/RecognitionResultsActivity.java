@@ -12,6 +12,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
+import com.example.pinellia.R;
 import com.example.pinellia.databinding.ActivityRecognitionResultsBinding;
 
 import java.io.IOException;
@@ -39,6 +43,9 @@ public class RecognitionResultsActivity extends AppCompatActivity {
 
         // Retrieve the image path from the recognition fragment
         String imagePath = getIntent().getStringExtra("imagePath");
+
+        //Display the image
+        loadAndDisplayImage(imagePath);
 
         // Show the progress bar
         binding.progressBar.setVisibility(View.VISIBLE);
@@ -89,6 +96,24 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         resizedBitmap.recycle();
 
         binding.textViewResults.setText(textToShow);
+    }
+
+    private void loadAndDisplayImage(String imagePath) {
+        if (imagePath == null) {
+            // Handle the case where the imagePath is null or invalid
+            return;
+        }
+
+        // Load and display the image using Glide
+        RequestOptions requestOptions = new RequestOptions()
+                .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache the image
+                .placeholder(R.drawable.bg_light_green_gradient) // Placeholder while loading
+                .error(R.drawable.bg_light_green_gradient); // Error placeholder
+
+        Glide.with(this)
+                .load("file://" + imagePath) // Load image from the file path
+                .apply(requestOptions)
+                .into(binding.imageViewCaptured); // Set the loaded image to your ImageView
     }
 
     @Override
