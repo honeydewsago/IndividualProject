@@ -16,9 +16,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.example.pinellia.ui.herbDetails.HerbDetails;
+import com.example.pinellia.ui.HerbDetailsActivity;
 import com.example.pinellia.R;
-import com.example.pinellia.ui.searchHerb.SearchHerbActivity;
+import com.example.pinellia.ui.SearchHerbActivity;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentHomeBinding;
 import com.example.pinellia.model.Herb;
@@ -68,8 +68,8 @@ public class HomeFragment extends Fragment {
         herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Herb herb) {
-                // Launch HerbDetails activity and pass the clicked herb data
-                Intent intent = new Intent(getActivity(), HerbDetails.class);
+                // Launch HerbDetailsActivity activity and pass the clicked herb data
+                Intent intent = new Intent(getActivity(), HerbDetailsActivity.class);
                 intent.putExtra("herb", herb);
                 startActivity(intent);
             }

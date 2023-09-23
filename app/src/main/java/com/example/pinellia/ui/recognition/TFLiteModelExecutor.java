@@ -3,6 +3,7 @@ package com.example.pinellia.ui.recognition;
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -25,7 +26,7 @@ import java.util.PriorityQueue;
 
 public class TFLiteModelExecutor {
 
-    private static final String MODEL_PATH = "model8.tflite";
+    private static final String MODEL_PATH = "model9.tflite";
     private static final String LABEL_PATH = "labels.txt";
 
     private Interpreter tflite;
@@ -48,7 +49,7 @@ public class TFLiteModelExecutor {
         imageData.order(ByteOrder.nativeOrder());
         labelProbArray = new float[1][labelList.size()];
 
-        Log.d("tflite", "Created a TFLite Model.");
+        Log.d("tflite", "Created a TFLite Model with "+MODEL_PATH);
     }
 
     private MappedByteBuffer loadModelFile(Activity activity) throws IOException {
@@ -77,8 +78,11 @@ public class TFLiteModelExecutor {
             Log.e("tflite", "TFLite Model has not been initialized. Unable to run inference.");
             return "Uninitialized TFLite Model";
         }
-        convertBitmapToByteBuffer(bitmap);
-        // Here's where the magic happens!!!
+
+//        convertBitmapToByteBuffer(bitmap);
+//        processImageForResNet50(bitmap);
+        preprocessImageForResNet50(bitmap);
+
         long startTime = SystemClock.uptimeMillis();
         tflite.run(imageData, labelProbArray);
         long endTime = SystemClock.uptimeMillis();
@@ -107,6 +111,64 @@ public class TFLiteModelExecutor {
             }
         }
     }
+
+    private ByteBuffer preprocessImageForResNet50(Bitmap bitmap) {
+        // Resize the image to the expected input size (IMG_SIZE_X x IMG_SIZE_Y)
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, IMG_SIZE_X, IMG_SIZE_Y, true);
+
+        // Convert RGB to BGR and normalize pixel values
+        float[] normalizedValues = new float[IMG_SIZE_X * IMG_SIZE_Y * PIXEL_SIZE];
+        int pixel = 0;
+
+        for (int i = 0; i < IMG_SIZE_X; ++i) {
+            for (int j = 0; j < IMG_SIZE_Y; ++j) {
+                int color = resizedBitmap.getPixel(i, j);
+
+                // Convert RGB to BGR
+                float blue = (Color.red(color) - IMG_MEAN) / IMG_STD;
+                float green = (Color.green(color) - IMG_MEAN) / IMG_STD;
+                float red = (Color.blue(color) - IMG_MEAN) / IMG_STD;
+
+                // Store BGR values
+                normalizedValues[pixel++] = blue;
+                normalizedValues[pixel++] = green;
+                normalizedValues[pixel++] = red;
+            }
+        }
+
+        // Create a new ByteBuffer and copy the normalized values
+        ByteBuffer inputBuffer = ByteBuffer.allocateDirect(4 * BATCH_SIZE * IMG_SIZE_X * IMG_SIZE_Y * PIXEL_SIZE);
+        inputBuffer.order(ByteOrder.nativeOrder());
+        inputBuffer.rewind();
+        for (float value : normalizedValues) {
+            inputBuffer.putFloat(value);
+        }
+
+        return inputBuffer;
+    }
+
+
+//    public Bitmap processImageForResNet50(Bitmap bitmap) {
+//        // Create a Mat object from the Bitmap
+//        Mat mat = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC3);
+//
+//        // Convert the Bitmap to BGR format
+//        Utils.bitmapToMat(bitmap, mat);
+//        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGBA2BGR);
+//
+//        // Zero-center the image with respect to the ImageNet dataset
+//        Scalar mean = new Scalar(104, 117, 123); // These values are specific to ImageNet
+//        Core.subtract(mat, mean, mat);
+//
+//        // Ensure the Mat is in the correct data type (float32)
+//        mat.convertTo(mat, CvType.CV_32FC3);
+//
+//        // Convert the Mat back to a Bitmap
+//        Bitmap processedBitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
+//        Utils.matToBitmap(mat, processedBitmap);
+//
+//        return processedBitmap;
+//    }
 
     private String printTopKLabels() {
         for (int i = 0; i < labelList.size(); ++i) {

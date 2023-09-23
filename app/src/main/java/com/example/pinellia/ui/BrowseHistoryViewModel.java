@@ -1,4 +1,4 @@
-package com.example.pinellia.ui.history;
+package com.example.pinellia.ui;
 
 import android.content.Context;
 import android.content.SharedPreferences;

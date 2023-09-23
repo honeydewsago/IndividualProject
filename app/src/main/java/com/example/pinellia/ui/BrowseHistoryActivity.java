@@ -1,27 +1,16 @@
-package com.example.pinellia.ui.history;
+package com.example.pinellia.ui;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.ActivityBrowseHistoryBinding;
 import com.example.pinellia.model.Herb;
-import com.example.pinellia.ui.herbDetails.HerbDetails;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,8 +60,8 @@ public class BrowseHistoryActivity extends AppCompatActivity {
         herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Herb herb) {
-                // Launch HerbDetails activity and pass the clicked herb data
-                Intent intent = new Intent(BrowseHistoryActivity.this, HerbDetails.class);
+                // Launch HerbDetailsActivity activity and pass the clicked herb data
+                Intent intent = new Intent(BrowseHistoryActivity.this, HerbDetailsActivity.class);
                 intent.putExtra("herb", herb);
                 startActivity(intent);
             }

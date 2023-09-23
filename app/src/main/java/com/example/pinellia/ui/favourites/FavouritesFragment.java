@@ -1,6 +1,8 @@
 package com.example.pinellia.ui.favourites;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,8 +24,8 @@ import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.FragmentFavouritesBinding;
 import com.example.pinellia.model.Herb;
 import com.example.pinellia.ui.AboutUsActivity;
-import com.example.pinellia.ui.history.BrowseHistoryActivity;
-import com.example.pinellia.ui.herbDetails.HerbDetails;
+import com.example.pinellia.ui.BrowseHistoryActivity;
+import com.example.pinellia.ui.HerbDetailsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,8 +89,8 @@ public class FavouritesFragment extends Fragment {
         herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Herb herb) {
-                // Launch HerbDetails activity and pass the clicked herb data
-                Intent intent = new Intent(getActivity(), HerbDetails.class);
+                // Launch HerbDetailsActivity activity and pass the clicked herb data
+                Intent intent = new Intent(getActivity(), HerbDetailsActivity.class);
                 intent.putExtra("herb", herb);
                 startActivity(intent);
             }
@@ -118,6 +120,23 @@ public class FavouritesFragment extends Fragment {
         }
     }
 
+    private void showAlertDialog() {
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = new AlertDialog.Builder(requireContext())
+                .setTitle("User Acknowledgement")
+                .setMessage("This app is designed for informational purposes and as a supplement to your wellness journey. While it provides insights into Traditional Chinese Medicine (TCM) and herbal remedies, it is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with a qualified healthcare provider for any health-related concerns.")
+                .setPositiveButton("I understand", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Handle the "OK" button click
+                        dialog.dismiss(); // Dismiss the dialog
+                    }
+                })
+                .setCancelable(false) // Make the dialog non-cancelable
+                .create();
+
+        alertDialog.show(); // Show the AlertDialog
+    }
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_favourites_menu, menu);
@@ -133,7 +152,11 @@ public class FavouritesFragment extends Fragment {
             Intent intent = new Intent(requireContext(), BrowseHistoryActivity.class);
             startActivity(intent);
             return true;
-        } else if (id == R.id.action_settings) {
+        } else if (id == R.id.action_acknowledge) {
+            // Handle Settings click
+            showAlertDialog();
+            return true;
+        }else if (id == R.id.action_settings) {
             // Handle Settings click
             Toast.makeText(requireContext(), "Settings clicked", Toast.LENGTH_SHORT).show();
             return true;

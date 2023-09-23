@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:scrollbars="vertical"
-    tools:context=".ui.herbDetails.HerbDetails">
+    tools:context=".ui.HerbDetailsActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
