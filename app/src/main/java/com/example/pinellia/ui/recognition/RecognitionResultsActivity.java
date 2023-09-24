@@ -76,7 +76,7 @@ public class RecognitionResultsActivity extends AppCompatActivity {
                             Bitmap bitmap = processImageToBGR(imagePath);
                             binding.imageViewProcess.setImageBitmap(bitmap);
 
-                            classifyImage(bitmap);
+                            classifyImage(imagePath);
 
                             // Hide the progress bar after classification is done
                             binding.progressBar.setVisibility(View.GONE);
@@ -86,60 +86,6 @@ public class RecognitionResultsActivity extends AppCompatActivity {
             }
         });
     }
-
-//    private void displayProcessedImage(String path) {
-//        Log.d("tflite", "Displaying processed image");
-//
-//        // Convert the captured image to a bitmap
-//        Bitmap capturedBitmap = BitmapFactory.decodeFile(path);
-//
-//        ByteBuffer processedBuffer = tfliteModelExecutor.preprocessImageForResNet50(capturedBitmap);
-//
-//        // Convert the ByteBuffer to float values
-//        float[] floatValues = new float[TFLiteModelExecutor.IMG_SIZE_X * TFLiteModelExecutor.IMG_SIZE_Y * TFLiteModelExecutor.PIXEL_SIZE];
-//        processedBuffer.rewind();
-//        processedBuffer.asFloatBuffer().get(floatValues);
-//
-//        // Convert float values to ARGB pixel values
-//        int[] intValues = new int[TFLiteModelExecutor.IMG_SIZE_X * TFLiteModelExecutor.IMG_SIZE_Y];
-//        for (int i = 0; i < intValues.length; ++i) {
-//            intValues[i] = Color.argb(255,
-//                    (int) (floatValues[i] * TFLiteModelExecutor.IMG_STD + TFLiteModelExecutor.IMG_MEAN),
-//                    (int) (floatValues[i + intValues.length] * TFLiteModelExecutor.IMG_STD + TFLiteModelExecutor.IMG_MEAN),
-//                    (int) (floatValues[i + 2 * intValues.length] * TFLiteModelExecutor.IMG_STD + TFLiteModelExecutor.IMG_MEAN));
-//        }
-//
-//        // Create a Bitmap from the ARGB pixel values
-//        Bitmap bitmap = Bitmap.createBitmap(intValues, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, Bitmap.Config.ARGB_8888);
-//
-//        // Display the processed image in the ImageView
-//        binding.imageViewProcess.setImageBitmap(bitmap);
-//
-//    }
-
-    // Function to convert a ByteBuffer to a Bitmap
-//    private Bitmap convertByteBufferToBitmap(ByteBuffer buffer) {
-//        Log.d("tflite", "Converting byte buffer to bitmap");
-//        int[] intValues = new int[TFLiteModelExecutor.IMG_SIZE_X * TFLiteModelExecutor.IMG_SIZE_Y];
-//        float[] floatValues = new float[intValues.length];
-//
-//        // Convert the ByteBuffer to float values
-//        buffer.rewind();
-//        buffer.asFloatBuffer().get(floatValues);
-//
-//        // Convert float values to ARGB pixel values
-//        for (int i = 0; i < intValues.length; ++i) {
-//            intValues[i] = Color.argb(255,
-//                    (int) (floatValues[i] * TFLiteModelExecutor.IMG_STD + TFLiteModelExecutor.IMG_MEAN),
-//                    (int) (floatValues[i + intValues.length] * TFLiteModelExecutor.IMG_STD + TFLiteModelExecutor.IMG_MEAN),
-//                    (int) (floatValues[i + 2 * intValues.length] * TFLiteModelExecutor.IMG_STD + TFLiteModelExecutor.IMG_MEAN));
-//        }
-//
-//        // Create a Bitmap from the ARGB pixel values
-//        Bitmap bitmap = Bitmap.createBitmap(intValues, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, Bitmap.Config.ARGB_8888);
-//
-//        return bitmap;
-//    }
 
     private Bitmap processImageToBGR(String path) {
         Log.d("tflite", "Displaying processed image");
@@ -183,45 +129,25 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         resizedBitmap.setPixels(pixels, 0, width, 0, 0, width, height);
 
         return resizedBitmap;
-        // Display the processed image in the ImageView
-//        binding.imageViewProcess.setImageBitmap(resizedBitmap);
     }
 
-    private void classifyImage(Bitmap bitmap) {
+    private void classifyImage(String path) {
         if (tfliteModelExecutor == null) {
             Toast.makeText(this, "Uninitialized tflite model or invalid context.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Convert the captured image to a bitmap
-//        Bitmap capturedBitmap = BitmapFactory.decodeFile(path);
+        Bitmap capturedBitmap = BitmapFactory.decodeFile(path);
 
         // Resize and preprocess the image
-//        Bitmap resizedBitmap = Bitmap.createScaledBitmap(capturedBitmap, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, true);
+        Bitmap resizedBitmap = Bitmap.createScaledBitmap(capturedBitmap, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, true);
 
-        String textToShow = tfliteModelExecutor.runInference(bitmap);
-        bitmap.recycle();
+        String textToShow = tfliteModelExecutor.runInference(resizedBitmap);
+        resizedBitmap.recycle();
 
         binding.textViewResults.setText(textToShow);
     }
-
-//    private void classifyImage(String path) {
-//        if (tfliteModelExecutor == null) {
-//            Toast.makeText(this, "Uninitialized tflite model or invalid context.", Toast.LENGTH_SHORT).show();
-//            return;
-//        }
-//
-//        // Convert the captured image to a bitmap
-//        Bitmap capturedBitmap = BitmapFactory.decodeFile(path);
-//
-//        // Resize and preprocess the image
-//        Bitmap resizedBitmap = Bitmap.createScaledBitmap(capturedBitmap, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, true);
-//
-//        String textToShow = tfliteModelExecutor.runInference(resizedBitmap);
-//        resizedBitmap.recycle();
-//
-//        binding.textViewResults.setText(textToShow);
-//    }
 
     private void loadAndDisplayImage(String imagePath) {
         if (imagePath == null) {
