@@ -19,6 +19,12 @@
         android:theme="@style/Theme.Pinellia"
         tools:targetApi="31">
         <activity
+            android:name=".ui.selfCare.UsageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.selfCare.SymptomActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.AboutUsActivity"
             android:exported="false" />
         <activity
