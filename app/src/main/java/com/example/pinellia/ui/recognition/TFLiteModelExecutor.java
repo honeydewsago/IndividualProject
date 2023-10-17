@@ -26,7 +26,7 @@ import java.util.PriorityQueue;
 
 public class TFLiteModelExecutor {
 
-    private static final String MODEL_PATH = "model9.tflite";
+    private static final String MODEL_PATH = "model8.tflite";
     private static final String LABEL_PATH = "labels.txt";
 
     private Interpreter tflite;
@@ -80,9 +80,11 @@ public class TFLiteModelExecutor {
         }
 
         convertBitmapToByteBuffer(bitmap);
+//        ByteBuffer inputBuffer = convertBitmapToByteBufferBGR(bitmap);
 
         long startTime = SystemClock.uptimeMillis();
         tflite.run(imageData, labelProbArray);
+//        tflite.run(inputBuffer, labelProbArray);
         long endTime = SystemClock.uptimeMillis();
         Log.d("tflite", "Timecost to run model inference: " + Long.toString(endTime - startTime));
 
@@ -90,6 +92,27 @@ public class TFLiteModelExecutor {
         String textToShow = printTopKLabels();
         textToShow = Long.toString(endTime - startTime) + "ms" + textToShow;
         return textToShow;
+    }
+
+    private ByteBuffer convertBitmapToByteBufferBGR(Bitmap bitmap) {
+
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * BATCH_SIZE * IMG_SIZE_X * IMG_SIZE_Y * PIXEL_SIZE);
+        byteBuffer.order(ByteOrder.nativeOrder());
+
+        int[] intValues = new int[IMG_SIZE_X * IMG_SIZE_Y];
+        bitmap.getPixels(intValues, 0, IMG_SIZE_X, 0, 0, IMG_SIZE_X, IMG_SIZE_Y);
+
+        int pixel = 0;
+        for (int i = 0; i < IMG_SIZE_X; ++i) {
+            for (int j = 0; j < IMG_SIZE_Y; ++j) {
+                final int val = intValues[pixel++];
+                byteBuffer.putFloat(((val >> 16) & 0xFF) / 255.0f); // R
+                byteBuffer.putFloat(((val >> 8) & 0xFF) / 255.0f);  // G
+                byteBuffer.putFloat((val & 0xFF) / 255.0f);         // B
+            }
+        }
+
+        return byteBuffer;
     }
 
     private void convertBitmapToByteBuffer(Bitmap bitmap) {

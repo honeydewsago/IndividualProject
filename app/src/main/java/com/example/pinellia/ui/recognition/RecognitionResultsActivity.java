@@ -73,10 +73,15 @@ public class RecognitionResultsActivity extends AppCompatActivity {
                     public void run() {
                         //UI Thread processing
                         if (tfliteModelExecutor != null) {
-                            Bitmap bitmap = processImageToBGR(imagePath);
-                            binding.imageViewProcess.setImageBitmap(bitmap);
+//                            Bitmap bitmap = processImageToBGR(imagePath);
+//                            binding.imageViewProcess.setImageBitmap(bitmap);
+
 
                             classifyImage(imagePath);
+
+//                            Bitmap bitmap = processImageToBGRWithImageNet(imagePath);
+//                            binding.imageViewProcess.setImageBitmap(bitmap);
+//                            classifyImageResNet(bitmap);
 
                             // Hide the progress bar after classification is done
                             binding.progressBar.setVisibility(View.GONE);
@@ -85,6 +90,82 @@ public class RecognitionResultsActivity extends AppCompatActivity {
                 });
             }
         });
+    }
+
+    static float[][][] imagenet_preprocess_input_caffe2(Bitmap bitmap) {
+        final float[] imagenet_means_caffe = new float[]{103.939f, 116.779f, 123.68f};
+
+        float[][][] result = new float[bitmap.getHeight()][bitmap.getWidth()][3]; // Assuming RGB
+
+        for (int y = 0; y < bitmap.getHeight(); y++) {
+            for (int x = 0; x < bitmap.getWidth(); x++) {
+                final int px = bitmap.getPixel(x, y);
+
+                // Convert RGB to BGR
+                result[y][x][0] = (Color.red(px) - imagenet_means_caffe[2]) / 255.0f;  // B
+                result[y][x][1] = (Color.green(px) - imagenet_means_caffe[1]) / 255.0f; // G
+                result[y][x][2] = (Color.blue(px) - imagenet_means_caffe[0]) / 255.0f;  // R
+            }
+        }
+
+        return result;
+    }
+
+    static float[][][] imagenet_preprocess_input_caffe( Bitmap bitmap ) {
+        final float[] imagenet_means_caffe = new float[]{103.939f, 116.779f, 123.68f};
+
+        float[][][] result = new float[bitmap.getHeight()][bitmap.getWidth()][3];   // assuming rgb
+        for (int y = 0; y < bitmap.getHeight(); y++) {
+            for (int x = 0; x < bitmap.getWidth(); x++) {
+
+                final int px = bitmap.getPixel(x, y);
+
+                // rgb-->bgr, then subtract means.  no scaling
+                result[y][x][0] = (Color.blue(px) - imagenet_means_caffe[0] );
+                result[y][x][1] = (Color.green(px) - imagenet_means_caffe[1] );
+                result[y][x][2] = (Color.red(px) - imagenet_means_caffe[2] );
+            }
+        }
+
+        return result;
+    }
+
+    private Bitmap processImageToBGRWithImageNet(String path) {
+        Log.d("tflite", "Processing image to BGR");
+
+        // Convert the captured image to a bitmap
+        Bitmap capturedBitmap = BitmapFactory.decodeFile(path);
+
+        // Check if decoding the image was successful
+        if (capturedBitmap == null) {
+            Log.e("tflite", "Failed to decode the image.");
+            return null;
+        }
+
+        // Preprocess the captured image using imagenet_preprocess_input_caffe
+        float[][][] preprocessedImage = imagenet_preprocess_input_caffe2(capturedBitmap);
+
+        // Create a new Bitmap with the same dimensions as the captured image
+        Bitmap resizedBitmap = Bitmap.createBitmap(capturedBitmap.getWidth(), capturedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
+
+        for (int y = 0; y < preprocessedImage.length; y++) {
+            for (int x = 0; x < preprocessedImage[y].length; x++) {
+                int b = (int) preprocessedImage[y][x][0];
+                int g = (int) preprocessedImage[y][x][1];
+                int r = (int) preprocessedImage[y][x][2];
+
+                // Ensure the values are within the 0-255 range
+                b = Math.max(0, Math.min(255, b));
+                g = Math.max(0, Math.min(255, g));
+                r = Math.max(0, Math.min(255, r));
+
+                // Create a color pixel and set it in the Bitmap
+                int colorPixel = Color.rgb(r, g, b);
+                resizedBitmap.setPixel(x, y, colorPixel);
+            }
+        }
+
+        return resizedBitmap;
     }
 
     private Bitmap processImageToBGR(String path) {
@@ -129,6 +210,18 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         resizedBitmap.setPixels(pixels, 0, width, 0, 0, width, height);
 
         return resizedBitmap;
+    }
+
+    private void classifyImageResNet(Bitmap bitmap) {
+        if (tfliteModelExecutor == null) {
+            Toast.makeText(this, "Uninitialized tflite model or invalid context.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String textToShow = tfliteModelExecutor.runInference(bitmap);
+//        bitmap.recycle();
+
+        binding.textViewResults.setText(textToShow);
     }
 
     private void classifyImage(String path) {
