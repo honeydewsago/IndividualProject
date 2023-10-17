@@ -1,5 +1,6 @@
 package com.example.pinellia.ui.selfCare;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,8 +25,17 @@ public class SelfCareFragment extends Fragment {
         binding = FragmentSelfCareBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        final TextView textView = binding.textNotifications;
-        selfcareViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+        binding.relativeLayoutSymptom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to launch the SymptomActivity
+                Intent intent = new Intent(v.getContext(), SymptomActivity.class);
+
+                // Start the SymptomActivity
+                startActivity(intent);
+            }
+        });
+
         return root;
     }
 
