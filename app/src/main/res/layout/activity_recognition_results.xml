@@ -40,4 +40,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/bg_green_gradient" />
 
+    <ImageView
+        android:id="@+id/imageViewProcess"
+        android:layout_width="110dp"
+        android:layout_height="150dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/bg_green_gradient" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

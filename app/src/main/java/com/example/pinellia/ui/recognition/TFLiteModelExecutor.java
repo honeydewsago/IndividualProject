@@ -26,7 +26,7 @@ import java.util.PriorityQueue;
 
 public class TFLiteModelExecutor {
 
-    private static final String MODEL_PATH = "model9.tflite";
+    private static final String MODEL_PATH = "model8.tflite";
     private static final String LABEL_PATH = "labels.txt";
 
     private Interpreter tflite;
@@ -34,11 +34,11 @@ public class TFLiteModelExecutor {
     private ByteBuffer imageData = null;
     private static final int RESULTS_TO_SHOW = 15;
     private static final int BATCH_SIZE = 1;
-    private static final int PIXEL_SIZE = 3;
+    static final int PIXEL_SIZE = 3;
     static final int IMG_SIZE_X = 224;
     static final int IMG_SIZE_Y = 224;
-    private static final int IMG_MEAN = 224;
-    private static final float IMG_STD = 224.0f;
+    static final int IMG_MEAN = 224;
+    static final float IMG_STD = 224.0f;
     private int[] intValues = new int[IMG_SIZE_X * IMG_SIZE_Y];
     private float[][] labelProbArray = null;
 
@@ -79,12 +79,12 @@ public class TFLiteModelExecutor {
             return "Uninitialized TFLite Model";
         }
 
-//        convertBitmapToByteBuffer(bitmap);
-//        processImageForResNet50(bitmap);
-        preprocessImageForResNet50(bitmap);
+        convertBitmapToByteBuffer(bitmap);
+//        ByteBuffer inputBuffer = convertBitmapToByteBufferBGR(bitmap);
 
         long startTime = SystemClock.uptimeMillis();
         tflite.run(imageData, labelProbArray);
+//        tflite.run(inputBuffer, labelProbArray);
         long endTime = SystemClock.uptimeMillis();
         Log.d("tflite", "Timecost to run model inference: " + Long.toString(endTime - startTime));
 
@@ -92,6 +92,27 @@ public class TFLiteModelExecutor {
         String textToShow = printTopKLabels();
         textToShow = Long.toString(endTime - startTime) + "ms" + textToShow;
         return textToShow;
+    }
+
+    private ByteBuffer convertBitmapToByteBufferBGR(Bitmap bitmap) {
+
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * BATCH_SIZE * IMG_SIZE_X * IMG_SIZE_Y * PIXEL_SIZE);
+        byteBuffer.order(ByteOrder.nativeOrder());
+
+        int[] intValues = new int[IMG_SIZE_X * IMG_SIZE_Y];
+        bitmap.getPixels(intValues, 0, IMG_SIZE_X, 0, 0, IMG_SIZE_X, IMG_SIZE_Y);
+
+        int pixel = 0;
+        for (int i = 0; i < IMG_SIZE_X; ++i) {
+            for (int j = 0; j < IMG_SIZE_Y; ++j) {
+                final int val = intValues[pixel++];
+                byteBuffer.putFloat(((val >> 16) & 0xFF) / 255.0f); // R
+                byteBuffer.putFloat(((val >> 8) & 0xFF) / 255.0f);  // G
+                byteBuffer.putFloat((val & 0xFF) / 255.0f);         // B
+            }
+        }
+
+        return byteBuffer;
     }
 
     private void convertBitmapToByteBuffer(Bitmap bitmap) {
@@ -111,64 +132,6 @@ public class TFLiteModelExecutor {
             }
         }
     }
-
-    private ByteBuffer preprocessImageForResNet50(Bitmap bitmap) {
-        // Resize the image to the expected input size (IMG_SIZE_X x IMG_SIZE_Y)
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, IMG_SIZE_X, IMG_SIZE_Y, true);
-
-        // Convert RGB to BGR and normalize pixel values
-        float[] normalizedValues = new float[IMG_SIZE_X * IMG_SIZE_Y * PIXEL_SIZE];
-        int pixel = 0;
-
-        for (int i = 0; i < IMG_SIZE_X; ++i) {
-            for (int j = 0; j < IMG_SIZE_Y; ++j) {
-                int color = resizedBitmap.getPixel(i, j);
-
-                // Convert RGB to BGR
-                float blue = (Color.red(color) - IMG_MEAN) / IMG_STD;
-                float green = (Color.green(color) - IMG_MEAN) / IMG_STD;
-                float red = (Color.blue(color) - IMG_MEAN) / IMG_STD;
-
-                // Store BGR values
-                normalizedValues[pixel++] = blue;
-                normalizedValues[pixel++] = green;
-                normalizedValues[pixel++] = red;
-            }
-        }
-
-        // Create a new ByteBuffer and copy the normalized values
-        ByteBuffer inputBuffer = ByteBuffer.allocateDirect(4 * BATCH_SIZE * IMG_SIZE_X * IMG_SIZE_Y * PIXEL_SIZE);
-        inputBuffer.order(ByteOrder.nativeOrder());
-        inputBuffer.rewind();
-        for (float value : normalizedValues) {
-            inputBuffer.putFloat(value);
-        }
-
-        return inputBuffer;
-    }
-
-
-//    public Bitmap processImageForResNet50(Bitmap bitmap) {
-//        // Create a Mat object from the Bitmap
-//        Mat mat = new Mat(bitmap.getWidth(), bitmap.getHeight(), CvType.CV_8UC3);
-//
-//        // Convert the Bitmap to BGR format
-//        Utils.bitmapToMat(bitmap, mat);
-//        Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGBA2BGR);
-//
-//        // Zero-center the image with respect to the ImageNet dataset
-//        Scalar mean = new Scalar(104, 117, 123); // These values are specific to ImageNet
-//        Core.subtract(mat, mean, mat);
-//
-//        // Ensure the Mat is in the correct data type (float32)
-//        mat.convertTo(mat, CvType.CV_32FC3);
-//
-//        // Convert the Mat back to a Bitmap
-//        Bitmap processedBitmap = Bitmap.createBitmap(mat.cols(), mat.rows(), Bitmap.Config.ARGB_8888);
-//        Utils.matToBitmap(mat, processedBitmap);
-//
-//        return processedBitmap;
-//    }
 
     private String printTopKLabels() {
         for (int i = 0; i < labelList.size(); ++i) {
