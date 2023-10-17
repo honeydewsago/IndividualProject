@@ -36,6 +36,17 @@ public class SelfCareFragment extends Fragment {
             }
         });
 
+        binding.relativeLayoutUsage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Create an Intent to launch the UsageActivity
+                Intent intent = new Intent(v.getContext(), UsageActivity.class);
+
+                // Start the UsageActivity
+                startActivity(intent);
+            }
+        });
+
         return root;
     }
 
