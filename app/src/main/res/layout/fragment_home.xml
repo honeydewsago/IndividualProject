@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.home.HomeFragment"
-    android:background="@drawable/bg_light_green_gradient">
+    android:background="@drawable/bg_green_pattern">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewHerbs"
