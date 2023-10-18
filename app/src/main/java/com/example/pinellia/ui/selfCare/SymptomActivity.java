@@ -84,7 +84,6 @@ public class SymptomActivity extends AppCompatActivity{
         binding.recyclerViewSymRecommendation.setAdapter(herbAdapter);
 
         binding.textViewRecommendResults.setVisibility(View.INVISIBLE);
-        binding.recyclerViewSymRecommendation.setVisibility(View.GONE);
         binding.buttonSubmitSymptoms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,7 +92,6 @@ public class SymptomActivity extends AppCompatActivity{
 
                 if (!selectedSymptoms.isEmpty()) {
                     binding.textViewRecommendResults.setVisibility(View.VISIBLE);
-                    binding.recyclerViewSymRecommendation.setVisibility(View.VISIBLE);
 
                     int scrollTo = binding.textViewRecommendResults.getTop();
                     binding.scrollViewSymptomActivity.smoothScrollTo(0, scrollTo);
@@ -109,6 +107,7 @@ public class SymptomActivity extends AppCompatActivity{
     }
 
     private void getHerbList(List<HerbScore> herbScoreList) {
+        herbRecommendationList.clear();
         herbRecommendationCalculator.retrieveAllHerbs(new HerbRecommendationCalculator.AllHerbsCallback() {
             @Override
             public void onAllHerbsRetrieved(List<Herb> herbList) {
@@ -119,7 +118,6 @@ public class SymptomActivity extends AppCompatActivity{
                     for (Herb herb : herbList) {
                         if (herb.getName().equals(herbName)) {
                             herbRecommendationList.add(herb);
-                            Log.d("SymptomActivity", "Herb: "+herb.getName());
                             break; // Stop searching once found
                         }
                     }
@@ -141,12 +139,13 @@ public class SymptomActivity extends AppCompatActivity{
 
         if (symptomScoreList != null && herbNameList != null) {
             List<Double> summedScores = new ArrayList<>();
-            for (int i = 0; i < 15; i++) {
+            for (int i = 0; i < symptomScoreList.size(); i++) {
                 summedScores.add(0.0); // Initialize the sum for each herb to 0.0
             }
 
             for (String actualSymptom : actualSymptoms) {
-                for (int i = 0; i < 15; i++) {
+
+                for (int i = 0; i < symptomScoreList.size(); i++) {
                     SymptomScore scores = symptomScoreList.get(i);
                     String symptomName = scores.getSymptomName();
                     List<Double> scoresList = scores.getScores();
@@ -162,8 +161,10 @@ public class SymptomActivity extends AppCompatActivity{
 
             // Create and associate HerbScore with herb names
             for (int i = 0; i < 15; i++) {
-                HerbScore herbScore = new HerbScore(herbNameList.get(i), summedScores.get(i));
-                recommendationList.add(herbScore);
+                if (summedScores.get(i) != 0) {
+                    HerbScore herbScore = new HerbScore(herbNameList.get(i), summedScores.get(i));
+                    recommendationList.add(herbScore);
+                }
             }
 
             // Sort mHerbScoreList in descending order based on scores

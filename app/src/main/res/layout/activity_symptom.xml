@@ -6,6 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_green_pattern"
     tools:context=".ui.selfCare.SymptomActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -76,13 +77,25 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewSymRecommendation"
             android:layout_width="match_parent"
-            android:layout_height="600dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewRecommendResults" />
+
+        <TextView
+            android:id="@+id/textViewNoMoreRec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="No more recommendations"
+            android:textStyle="italic"
+            android:paddingBottom="32dp"
+            app:layout_constraintEnd_toEndOf="@+id/recyclerViewSymRecommendation"
+            app:layout_constraintStart_toStartOf="@+id/recyclerViewSymRecommendation"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewSymRecommendation" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
