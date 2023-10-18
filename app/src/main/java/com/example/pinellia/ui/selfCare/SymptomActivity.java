@@ -1,15 +1,16 @@
 package com.example.pinellia.ui.selfCare;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.example.pinellia.R;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.adapter.SymptomAdapter;
-import com.example.pinellia.databinding.ActivityRecognitionResultsBinding;
 import com.example.pinellia.databinding.ActivitySymptomBinding;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
@@ -54,6 +55,17 @@ public class SymptomActivity extends AppCompatActivity {
         binding.recyclerViewSymptom.setLayoutManager(layoutManager);
         symptomAdapter = new SymptomAdapter(symptomsList);
         binding.recyclerViewSymptom.setAdapter(symptomAdapter);
+
+        binding.textViewRecommendResults.setVisibility(View.INVISIBLE);
+        binding.buttonSubmitSymptoms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.textViewRecommendResults.setVisibility(View.VISIBLE);
+
+                int scrollTo = binding.textViewRecommendResults.getTop();
+                binding.scrollViewSymptomActivity.smoothScrollTo(0, scrollTo);
+            }
+        });
     }
 
     @Override
