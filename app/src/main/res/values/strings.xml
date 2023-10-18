@@ -6,4 +6,5 @@
     <string name="title_recognition">Recognition</string>
     <string name="not_identified">Not identified</string>
     <string name="about_us_intro">Welcome to Pinellia, your gateway to the world of Traditional Chinese Medicine (TCM). Our app empowers you to explore a rich collection of TCM herbs and remedies, providing personalized recommendations based on your unique symptoms. We\'re dedicated to making TCM accessible and informative, helping you harness the wisdom of centuries-old healing traditions for better health. Whether you\'re a newcomer or a seasoned enthusiast, join us on your wellness journey, and let\'s embrace the synergy of ancient wisdom and modern technology for a healthier and happier life.</string>
+    <string name="symptom">Symptom</string>
 </resources>
