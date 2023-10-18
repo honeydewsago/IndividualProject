@@ -1,9 +1,11 @@
 package com.example.pinellia.adapter;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pinellia.R;
@@ -36,8 +38,12 @@ public class SymptomAdapter extends RecyclerView.Adapter<SymptomAdapter.SymptomV
         holder.binding.toggleButtonSymptom.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if (isChecked) {
                 holder.binding.toggleButtonSymptom.setBackgroundResource(R.drawable.symptom_toogle_button);
+                int whiteColour = ContextCompat.getColor(holder.binding.toggleButtonSymptom.getContext(), R.color.white);
+                holder.binding.toggleButtonSymptom.setTextColor(whiteColour);
             } else {
                 holder.binding.toggleButtonSymptom.setBackgroundResource(R.drawable.symptom_toogle_button);
+                int blackColour = ContextCompat.getColor(holder.binding.toggleButtonSymptom.getContext(), R.color.dark_black);
+                holder.binding.toggleButtonSymptom.setTextColor(blackColour);
             }
         });
     }

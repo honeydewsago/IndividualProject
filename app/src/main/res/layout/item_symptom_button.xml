@@ -9,11 +9,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:paddingHorizontal="12dp"
-        android:layout_marginHorizontal="12dp"
-        android:layout_marginVertical="8dp"
         android:text="@string/symptom"
         android:textOn="@string/symptom"
         android:textOff="@string/symptom"
+        android:textColor="@color/dark_black"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="12dp"
         android:background="@drawable/symptom_toogle_button"/>
 </LinearLayout>

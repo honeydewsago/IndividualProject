@@ -11,6 +11,9 @@ import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.adapter.SymptomAdapter;
 import com.example.pinellia.databinding.ActivityRecognitionResultsBinding;
 import com.example.pinellia.databinding.ActivitySymptomBinding;
+import com.google.android.flexbox.FlexWrap;
+import com.google.android.flexbox.FlexboxLayoutManager;
+import com.google.android.flexbox.JustifyContent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,8 +45,13 @@ public class SymptomActivity extends AppCompatActivity {
 
         symptomsList = new ArrayList<>(Arrays.asList(symptomsArray));
 
+        // Initialize RecyclerView with FlexboxLayoutManager to display meridian tropism
+        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
+        layoutManager.setFlexWrap(FlexWrap.WRAP); // Enable item wrapping
+        layoutManager.setJustifyContent(JustifyContent.FLEX_START); // Align items to the start of the container
+
         // Set up RecyclerView to display favorite herbs
-        binding.recyclerViewSymptom.setLayoutManager(new LinearLayoutManager(this));
+        binding.recyclerViewSymptom.setLayoutManager(layoutManager);
         symptomAdapter = new SymptomAdapter(symptomsList);
         binding.recyclerViewSymptom.setAdapter(symptomAdapter);
     }
