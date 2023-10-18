@@ -3,6 +3,8 @@ package com.example.pinellia.adapter;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -10,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pinellia.R;
 import com.example.pinellia.databinding.ItemSymptomButtonBinding;
+
 import java.util.List;
 
 public class SymptomAdapter extends RecyclerView.Adapter<SymptomAdapter.SymptomViewHolder> {
@@ -40,6 +43,11 @@ public class SymptomAdapter extends RecyclerView.Adapter<SymptomAdapter.SymptomV
                 holder.binding.toggleButtonSymptom.setBackgroundResource(R.drawable.symptom_toogle_button);
                 int whiteColour = ContextCompat.getColor(holder.binding.toggleButtonSymptom.getContext(), R.color.white);
                 holder.binding.toggleButtonSymptom.setTextColor(whiteColour);
+
+                // Apply a scale animation when checked
+                Animation animation = AnimationUtils.loadAnimation(holder.binding.toggleButtonSymptom.getContext(), R.anim.scale_up);
+                holder.binding.toggleButtonSymptom.startAnimation(animation);
+
             } else {
                 holder.binding.toggleButtonSymptom.setBackgroundResource(R.drawable.symptom_toogle_button);
                 int blackColour = ContextCompat.getColor(holder.binding.toggleButtonSymptom.getContext(), R.color.dark_black);
