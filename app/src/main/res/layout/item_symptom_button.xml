@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <ToggleButton
+        android:id="@+id/toggleButtonSymptom"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingHorizontal="12dp"
+        android:layout_marginHorizontal="12dp"
+        android:layout_marginVertical="8dp"
+        android:text="@string/symptom"
+        android:textOn="@string/symptom"
+        android:textOff="@string/symptom"
+        android:background="@drawable/symptom_toogle_button"/>
+</LinearLayout>

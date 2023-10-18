@@ -10,6 +10,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="green_bright_light">#FFB9EB50</color>
     <color name="green_light">#FFA8CC7B</color>
+    <color name="green_light_warm">#FFAED76C</color>
     <color name="green_medium">#FF91C54F</color>
     <color name="green_dark">#FF50742C</color>
     <color name="pastel_green_light">#FFD7E1CA</color>
