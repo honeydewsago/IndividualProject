@@ -13,14 +13,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pinellia.R;
 import com.example.pinellia.databinding.ItemSymptomButtonBinding;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SymptomAdapter extends RecyclerView.Adapter<SymptomAdapter.SymptomViewHolder> {
 
     private List<String> symptomsList;
+    private List<Boolean> selectedItems;
 
     public SymptomAdapter(List<String> symptomsList) {
         this.symptomsList = symptomsList;
+        selectedItems = new ArrayList<>(Collections.nCopies(symptomsList.size(), false));
+    }
+
+    // Add a method to get the selected items
+    public List<String> getSelectedItems() {
+        List<String> selectedSymptoms = new ArrayList<>();
+        for (int i = 0; i < selectedItems.size(); i++) {
+            if (selectedItems.get(i)) {
+                selectedSymptoms.add(symptomsList.get(i));
+            }
+        }
+        return selectedSymptoms;
     }
 
     @Override
@@ -37,8 +52,12 @@ public class SymptomAdapter extends RecyclerView.Adapter<SymptomAdapter.SymptomV
         holder.binding.toggleButtonSymptom.setTextOn(symptom);
         holder.binding.toggleButtonSymptom.setTextOff(symptom);
 
+        // Set the selected state
+        holder.binding.toggleButtonSymptom.setChecked(selectedItems.get(position));
+
         // Set an OnCheckedChangeListener to handle the color change
         holder.binding.toggleButtonSymptom.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            selectedItems.set(position, isChecked);
             if (isChecked) {
                 holder.binding.toggleButtonSymptom.setBackgroundResource(R.drawable.symptom_toogle_button);
                 int whiteColour = ContextCompat.getColor(holder.binding.toggleButtonSymptom.getContext(), R.color.white);

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.pinellia.R;
 import com.example.pinellia.adapter.HerbAdapter;
@@ -61,6 +62,18 @@ public class SymptomActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 binding.textViewRecommendResults.setVisibility(View.VISIBLE);
+
+                // Retrieve the selected symptoms from the adapter
+                List<String> selectedSymptoms = symptomAdapter.getSelectedItems();
+
+                // Create a string to display the selected symptoms
+                StringBuilder selectedSymptomsText = new StringBuilder("Selected Symptoms:\n");
+                for (String symptom : selectedSymptoms) {
+                    selectedSymptomsText.append(symptom).append("\n");
+                }
+
+                // Show a toast with the selected symptoms
+                Toast.makeText(SymptomActivity.this, selectedSymptomsText.toString(), Toast.LENGTH_LONG).show();
 
                 int scrollTo = binding.textViewRecommendResults.getTop();
                 binding.scrollViewSymptomActivity.smoothScrollTo(0, scrollTo);
