@@ -139,6 +139,7 @@ public class SymptomActivity extends AppCompatActivity{
 
         if (symptomScoreList != null && herbNameList != null) {
             List<Double> summedScores = new ArrayList<>();
+
             for (int i = 0; i < symptomScoreList.size(); i++) {
                 summedScores.add(0.0); // Initialize the sum for each herb to 0.0
             }
@@ -162,7 +163,8 @@ public class SymptomActivity extends AppCompatActivity{
             // Create and associate HerbScore with herb names
             for (int i = 0; i < 15; i++) {
                 if (summedScores.get(i) != 0) {
-                    HerbScore herbScore = new HerbScore(herbNameList.get(i), summedScores.get(i));
+                    List<String> relevantSymptoms = findRelevantSymptoms(herbNameList.get(i), actualSymptoms, symptomScoreList);
+                    HerbScore herbScore = new HerbScore(herbNameList.get(i), summedScores.get(i), relevantSymptoms);
                     recommendationList.add(herbScore);
                 }
             }
@@ -178,13 +180,38 @@ public class SymptomActivity extends AppCompatActivity{
             // Log the summed scores
             StringBuilder logText = new StringBuilder("Summed Scores:\n");
             for (HerbScore herbScore : recommendationList) {
-                logText.append(herbScore.getHerbName()).append(": ").append(herbScore.getScores()).append("\n");
+                logText.append(herbScore.getHerbName()).append(": ").append(herbScore.getScores()).append(" Relevant Symptoms: ");
+                for (String symptom : herbScore.getSymptoms()) {
+                    logText.append(symptom).append(", ");
+                }
+                logText.append("\n");
             }
             Log.d("SymptomActivity", logText.toString());
         }
 
         return recommendationList;
     }
+
+    private List<String> findRelevantSymptoms(String herbName, List<String> userSymptoms, List<SymptomScore> symptomScoreList) {
+        List<String> relevantSymptoms = new ArrayList<>();
+
+        for (String symptom : userSymptoms) {
+            for (SymptomScore scores : symptomScoreList) {
+                String symptomName = scores.getSymptomName();
+                List<Double> scoresList = scores.getScores();
+
+                if (symptom.equals(symptomName)) {
+                    int herbIndex = herbNameList.indexOf(herbName);
+                    if (herbIndex >= 0 && scoresList.get(herbIndex) > 0) {
+                        relevantSymptoms.add(symptomName);
+                    }
+                }
+            }
+        }
+
+        return relevantSymptoms;
+    }
+
 
     private void fetchSymptomScores() {
         herbRecommendationCalculator.retrieveSymptomScores(new HerbRecommendationCalculator.SymptomScoresCallback() {
