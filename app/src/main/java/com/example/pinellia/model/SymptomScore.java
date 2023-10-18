@@ -2,14 +2,14 @@ package com.example.pinellia.model;
 
 import java.util.List;
 
-public class SymptomScores {
+public class SymptomScore {
     private String symptomName;
     private List<Double> scores;
 
-    public SymptomScores() {
+    public SymptomScore() {
     }
 
-    public SymptomScores(String symptomName, List<Double> scores) {
+    public SymptomScore(String symptomName, List<Double> scores) {
         this.symptomName = symptomName;
         this.scores = scores;
     }

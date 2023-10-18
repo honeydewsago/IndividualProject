@@ -1,6 +1,6 @@
 package com.example.pinellia.ui.selfCare;
 
-import com.example.pinellia.model.SymptomScores;
+import com.example.pinellia.model.SymptomScore;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -8,9 +8,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class HerbRecommendationCalculator {
     private final DatabaseReference tfidfDatabaseReference;
@@ -28,7 +26,7 @@ public class HerbRecommendationCalculator {
         tfidfDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                List<SymptomScores> symptomScoresList = new ArrayList<>();
+                List<SymptomScore> symptomScoreList = new ArrayList<>();
 
                 for (DataSnapshot symptomSnapshot : dataSnapshot.getChildren()) {
                     String symptomName = symptomSnapshot.getKey();
@@ -39,11 +37,11 @@ public class HerbRecommendationCalculator {
                         scores.add(score);
                     }
 
-                    SymptomScores symptomScores = new SymptomScores(symptomName, scores);
-                    symptomScoresList.add(symptomScores);
+                    SymptomScore symptomScore = new SymptomScore(symptomName, scores);
+                    symptomScoreList.add(symptomScore);
                 }
 
-                callback.onSymptomScoresRetrieved(symptomScoresList);
+                callback.onSymptomScoresRetrieved(symptomScoreList);
             }
 
             @Override
@@ -54,7 +52,7 @@ public class HerbRecommendationCalculator {
     }
 
     public interface SymptomScoresCallback {
-        void onSymptomScoresRetrieved(List<SymptomScores> symptomScores);
+        void onSymptomScoresRetrieved(List<SymptomScore> symptomScores);
 
         void onSymptomScoresError(Exception e);
     }
@@ -85,4 +83,6 @@ public class HerbRecommendationCalculator {
 
         void onHerbNamesError(Exception e);
     }
+
+
 }
