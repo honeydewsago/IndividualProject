@@ -1,19 +1,27 @@
 package com.example.pinellia.ui.selfCare;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.adapter.SymptomAdapter;
 import com.example.pinellia.databinding.ActivitySymptomBinding;
+import com.example.pinellia.model.Herb;
 import com.example.pinellia.model.HerbScore;
 import com.example.pinellia.model.SymptomScore;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,9 +33,11 @@ public class SymptomActivity extends AppCompatActivity{
 
     private ActivitySymptomBinding binding;
     private SymptomAdapter symptomAdapter;
+    private HerbAdapter herbAdapter;
     private List<String> symptomsList;
     private List<String> herbNameList;
     private List<HerbScore> herbScoreList;
+    private List<Herb> herbRecommendationList;
     private List<SymptomScore> symptomScoreList;
     private HerbRecommendationCalculator herbRecommendationCalculator;
 
@@ -56,6 +66,7 @@ public class SymptomActivity extends AppCompatActivity{
 
         symptomsList = new ArrayList<>(Arrays.asList(symptomsArray));
         herbScoreList = new ArrayList<>();
+        herbRecommendationList = new ArrayList<>();
 
         // Initialize RecyclerView with FlexboxLayoutManager to display meridian tropism
         FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
@@ -67,19 +78,59 @@ public class SymptomActivity extends AppCompatActivity{
         symptomAdapter = new SymptomAdapter(symptomsList);
         binding.recyclerViewSymptom.setAdapter(symptomAdapter);
 
+        // Set up RecyclerView to display favorite herbs
+        binding.recyclerViewSymRecommendation.setLayoutManager(new LinearLayoutManager(this));
+        herbAdapter = new HerbAdapter(herbRecommendationList);
+        binding.recyclerViewSymRecommendation.setAdapter(herbAdapter);
+
         binding.textViewRecommendResults.setVisibility(View.INVISIBLE);
+        binding.recyclerViewSymRecommendation.setVisibility(View.GONE);
         binding.buttonSubmitSymptoms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                binding.textViewRecommendResults.setVisibility(View.VISIBLE);
-
                 // Retrieve the selected symptoms from the adapter
                 List<String> selectedSymptoms = symptomAdapter.getSelectedItems();
 
-                int scrollTo = binding.textViewRecommendResults.getTop();
-                binding.scrollViewSymptomActivity.smoothScrollTo(0, scrollTo);
+                if (!selectedSymptoms.isEmpty()) {
+                    binding.textViewRecommendResults.setVisibility(View.VISIBLE);
+                    binding.recyclerViewSymRecommendation.setVisibility(View.VISIBLE);
 
-                herbScoreList = calculateHerbRecommendation(selectedSymptoms);
+                    int scrollTo = binding.textViewRecommendResults.getTop();
+                    binding.scrollViewSymptomActivity.smoothScrollTo(0, scrollTo);
+
+                    herbScoreList = calculateHerbRecommendation(selectedSymptoms);
+                    getHerbList(herbScoreList);
+                }
+                else {
+                    Toast.makeText(SymptomActivity.this, "No symptoms selected", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void getHerbList(List<HerbScore> herbScoreList) {
+        herbRecommendationCalculator.retrieveAllHerbs(new HerbRecommendationCalculator.AllHerbsCallback() {
+            @Override
+            public void onAllHerbsRetrieved(List<Herb> herbList) {
+                for (HerbScore herbScore : herbScoreList) {
+                    String herbName = herbScore.getHerbName();
+
+                    // Search for the corresponding herb in herbList
+                    for (Herb herb : herbList) {
+                        if (herb.getName().equals(herbName)) {
+                            herbRecommendationList.add(herb);
+                            Log.d("SymptomActivity", "Herb: "+herb.getName());
+                            break; // Stop searching once found
+                        }
+                    }
+                }
+                herbAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onAllHerbsError(Exception e) {
+                // Handle the error
+                Toast.makeText(SymptomActivity.this, "Error retrieving herbs: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
