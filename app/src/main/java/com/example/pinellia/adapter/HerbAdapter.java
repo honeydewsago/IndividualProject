@@ -1,5 +1,6 @@
 package com.example.pinellia.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +15,12 @@ import com.example.pinellia.R;
 import com.example.pinellia.databinding.ItemHerbCardviewBinding;
 import com.example.pinellia.model.Herb;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder> {
     private List<Herb> herbList;
+//    private List<String> symptomsList;
     private OnItemClickListener itemClickListener;
 
     public HerbAdapter(List<Herb> herbList) {
@@ -31,6 +34,9 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
         notifyDataSetChanged();
     }
 
+//    public void setSymptomsList(List<String> symptomsList) {
+//        this.symptomsList = symptomsList;
+//    }
     @NonNull
     @Override
     public HerbViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -86,6 +92,14 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
 
         void bind(Herb herb) {
             binding.textViewName.setText(herb.getName());
+
+            // Check if the symptoms list is empty and update visibility
+            if (herb.getSymptomsList() != null &&  !herb.getSymptomsList().isEmpty()) {
+                binding.textViewSymptoms.setVisibility(View.VISIBLE);
+                binding.textViewSymptoms.setText("Symptoms: " + TextUtils.join(", ", herb.getSymptomsList()));
+            } else {
+                binding.textViewSymptoms.setVisibility(View.GONE);
+            }
 
             // Load the image from Firebase Storage using Glide
             String imageLink = herb.getImageLink();

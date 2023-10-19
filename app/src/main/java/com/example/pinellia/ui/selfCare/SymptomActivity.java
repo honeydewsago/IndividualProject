@@ -117,6 +117,7 @@ public class SymptomActivity extends AppCompatActivity{
                     // Search for the corresponding herb in herbList
                     for (Herb herb : herbList) {
                         if (herb.getName().equals(herbName)) {
+                            herb.setSymptomsList(herbScore.getSymptoms());
                             herbRecommendationList.add(herb);
                             break; // Stop searching once found
                         }

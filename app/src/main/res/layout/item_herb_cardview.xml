@@ -1,40 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:padding="12dp"
+    android:layout_marginVertical="8dp"
     android:background="@drawable/white_box_bg"
-    android:layout_marginVertical="8dp">
+    android:orientation="vertical"
+    android:padding="12dp">
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageViewHerb"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_centerVertical="true"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="20dp"
-        app:shapeAppearance="@style/roundedImageView"
-        android:scaleType="centerCrop" />
+        android:layout_marginTop="4dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_green_gradient"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/roundedImageView" />
 
     <TextView
         android:id="@+id/textViewName"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="12dp"
-        android:layout_toEndOf="@+id/imageViewHerb"
-        android:layout_toStartOf="@id/imageViewArrow"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="2dp"
         android:text="Herb Name"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewHerb"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewArrow"
+        app:layout_constraintStart_toEndOf="@+id/imageViewHerb"
+        app:layout_constraintTop_toTopOf="@+id/imageViewHerb" />
 
     <ImageView
         android:id="@+id/imageViewArrow"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        app:srcCompat="@drawable/baseline_keyboard_arrow_right_green_24"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true"/>
-</RelativeLayout>
+        android:src="@drawable/baseline_keyboard_arrow_right_green_24"
+        app:layout_constraintBottom_toBottomOf="@+id/textViewName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/textViewName" />
+
+    <TextView
+        android:id="@+id/textViewSymptoms"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Symptom"
+        android:textSize="16sp"
+        android:textColor="@color/green_medium_dark"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewArrow"
+        app:layout_constraintStart_toStartOf="@+id/imageViewHerb"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewHerb" />
+</androidx.constraintlayout.widget.ConstraintLayout>
