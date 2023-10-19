@@ -123,6 +123,16 @@ public class HerbRecommendationCalculator {
                 lowercaseSymptom = "epistaxis";
             } else if (symptom.equals("Yin Deficiency")) {
                 lowercaseSymptom = "yin";
+            } else if (symptom.equals("Nourish Blood")) {
+                lowercaseSymptom = "blood";
+            } else if (symptom.equals("Anti-Cancer")) {
+                lowercaseSymptom = "cancer";
+            } else if (symptom.equals("Clearing Heat")) {
+                lowercaseSymptom = "heat";
+            } else if (symptom.equals("Calming Mind")) {
+                lowercaseSymptom = "mind";
+            } else if (symptom.equals("Regulate Qi")) {
+                lowercaseSymptom = "qi";
             } else {
                 lowercaseSymptom = symptom.toLowerCase();
             }
