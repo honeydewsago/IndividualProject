@@ -3,6 +3,7 @@ package com.example.pinellia.ui.selfCare;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ import com.example.pinellia.databinding.ActivityUsageBinding;
 import com.example.pinellia.model.Herb;
 import com.example.pinellia.model.HerbScore;
 import com.example.pinellia.model.SymptomScore;
+import com.example.pinellia.ui.HerbDetailsActivity;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
@@ -71,6 +73,17 @@ public class UsageActivity extends AppCompatActivity {
         binding.recyclerViewUsgRecommendation.setLayoutManager(new LinearLayoutManager(this));
         herbAdapter = new HerbAdapter(herbRecommendationList);
         binding.recyclerViewUsgRecommendation.setAdapter(herbAdapter);
+
+        // Handle click event for each herb item
+        herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Herb herb) {
+                // Launch HerbDetailsActivity activity and pass the clicked herb data
+                Intent intent = new Intent(UsageActivity.this, HerbDetailsActivity.class);
+                intent.putExtra("herb", herb);
+                startActivity(intent);
+            }
+        });
 
         binding.buttonSubmitUsage.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -3,6 +3,7 @@ package com.example.pinellia.ui.selfCare;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,8 @@ import com.example.pinellia.databinding.ActivitySymptomBinding;
 import com.example.pinellia.model.Herb;
 import com.example.pinellia.model.HerbScore;
 import com.example.pinellia.model.SymptomScore;
+import com.example.pinellia.ui.BrowseHistoryActivity;
+import com.example.pinellia.ui.HerbDetailsActivity;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
@@ -82,6 +85,17 @@ public class SymptomActivity extends AppCompatActivity{
         binding.recyclerViewSymRecommendation.setLayoutManager(new LinearLayoutManager(this));
         herbAdapter = new HerbAdapter(herbRecommendationList);
         binding.recyclerViewSymRecommendation.setAdapter(herbAdapter);
+
+        // Handle click event for each herb item
+        herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Herb herb) {
+                // Launch HerbDetailsActivity activity and pass the clicked herb data
+                Intent intent = new Intent(SymptomActivity.this, HerbDetailsActivity.class);
+                intent.putExtra("herb", herb);
+                startActivity(intent);
+            }
+        });
 
         binding.textViewRecommendResults.setVisibility(View.INVISIBLE);
         binding.buttonSubmitSymptoms.setOnClickListener(new View.OnClickListener() {
