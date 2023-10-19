@@ -20,7 +20,6 @@ import java.util.List;
 
 public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder> {
     private List<Herb> herbList;
-//    private List<String> symptomsList;
     private OnItemClickListener itemClickListener;
 
     public HerbAdapter(List<Herb> herbList) {
@@ -34,9 +33,6 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
         notifyDataSetChanged();
     }
 
-//    public void setSymptomsList(List<String> symptomsList) {
-//        this.symptomsList = symptomsList;
-//    }
     @NonNull
     @Override
     public HerbViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
