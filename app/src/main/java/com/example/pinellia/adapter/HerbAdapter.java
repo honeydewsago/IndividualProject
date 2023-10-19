@@ -94,9 +94,11 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
             binding.textViewName.setText(herb.getName());
 
             // Check if the symptoms list is empty and update visibility
-            if (herb.getSymptomsList() != null &&  !herb.getSymptomsList().isEmpty()) {
-                binding.textViewSymptoms.setVisibility(View.VISIBLE);
-                binding.textViewSymptoms.setText("Symptoms: " + TextUtils.join(", ", herb.getSymptomsList()));
+            if (herb.getSymptomsList() != null) {
+                if (!herb.getSymptomsList().isEmpty()) {
+                    binding.textViewSymptoms.setVisibility(View.VISIBLE);
+                    binding.textViewSymptoms.setText("Symptoms: " + TextUtils.join(", ", herb.getSymptomsList()));
+                }
             } else {
                 binding.textViewSymptoms.setVisibility(View.GONE);
             }

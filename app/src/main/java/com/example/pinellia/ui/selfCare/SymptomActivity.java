@@ -164,7 +164,7 @@ public class SymptomActivity extends AppCompatActivity{
             // Create and associate HerbScore with herb names
             for (int i = 0; i < 15; i++) {
                 if (summedScores.get(i) != 0) {
-                    List<String> relevantSymptoms = findRelevantSymptoms(herbNameList.get(i), actualSymptoms, symptomScoreList);
+                    List<String> relevantSymptoms = findRelevantSymptoms(herbNameList.get(i), actualSymptoms, selectedSymptoms, symptomScoreList);
                     HerbScore herbScore = new HerbScore(herbNameList.get(i), summedScores.get(i), relevantSymptoms);
                     recommendationList.add(herbScore);
                 }
@@ -193,18 +193,19 @@ public class SymptomActivity extends AppCompatActivity{
         return recommendationList;
     }
 
-    private List<String> findRelevantSymptoms(String herbName, List<String> userSymptoms, List<SymptomScore> symptomScoreList) {
+    private List<String> findRelevantSymptoms(String herbName, List<String> actualSymptoms, List<String> userSymptoms, List<SymptomScore> symptomScoreList) {
         List<String> relevantSymptoms = new ArrayList<>();
 
-        for (String symptom : userSymptoms) {
+        for (String symptom : actualSymptoms) {
             for (SymptomScore scores : symptomScoreList) {
                 String symptomName = scores.getSymptomName();
                 List<Double> scoresList = scores.getScores();
 
                 if (symptom.equals(symptomName)) {
                     int herbIndex = herbNameList.indexOf(herbName);
+                    int herbNameIndex = actualSymptoms.indexOf(symptom);
                     if (herbIndex >= 0 && scoresList.get(herbIndex) > 0) {
-                        relevantSymptoms.add(symptomName);
+                        relevantSymptoms.add(userSymptoms.get(herbNameIndex));
                     }
                 }
             }
