@@ -19,8 +19,6 @@ public class SelfCareFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        SelfCareViewModel selfcareViewModel =
-                new ViewModelProvider(this).get(SelfCareViewModel.class);
 
         binding = FragmentSelfCareBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
