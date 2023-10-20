@@ -7,6 +7,16 @@ import android.graphics.Color;
 import android.os.SystemClock;
 import android.util.Log;
 
+import androidx.core.util.Pair;
+
+import com.example.pinellia.model.Herb;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
 import org.tensorflow.lite.Interpreter;
 
 import java.io.BufferedReader;
@@ -89,13 +99,14 @@ public class TFLiteModelExecutor {
         long endTime = SystemClock.uptimeMillis();
         Log.d("tflite", "Timecost to run model inference: " + Long.toString(endTime - startTime));
 
-        getTopKLabels();
+//        getTopKLabels();
 
         // print the results
 //        String textToShow = printTopKLabels();
 
         List<Map.Entry<String, Float>> topKLabels = getTopKLabels();
-        topKLabels = changeActualHerbNames(topKLabels);
+        List<Map.Entry<String, Double>> finalizedLabels = finalizeActualHerbLabels(topKLabels);
+        getHerbList(finalizedLabels);
 
         // Log the updated labels to the console
         for (Map.Entry<String, Float> entry : topKLabels) {
@@ -145,29 +156,54 @@ public class TFLiteModelExecutor {
 //        return textToShow;
 //    }
 
-    private List<Map.Entry<String, Float>> getTopKLabels() {
-        List<Map.Entry<String, Float>> topKLabels = new ArrayList<>();
+    private void getHerbList(List<Map.Entry<String, Double>> finalizedLabels) {
+        DatabaseReference herbsRef = FirebaseDatabase.getInstance().getReference("herbs");
 
-        for (int i = 0; i < labelList.size(); ++i) {
-            sortedLabels.add(
-                    new AbstractMap.SimpleEntry<>(labelList.get(i), labelProbArray[0][i]));
-            if (sortedLabels.size() > RESULTS_TO_SHOW) {
-                sortedLabels.poll();
-            }
+        // Create a list to store the matching herbs
+        List<Pair<Herb, Double>> matchingHerbs = new ArrayList<>();
+
+        for (Map.Entry<String, Double> entry : finalizedLabels) {
+            String herbName = entry.getKey();
+
+            // Query the herbs that match the herbName
+            Query query = herbsRef.orderByChild("name").equalTo(herbName);
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for (DataSnapshot herbSnapshot : dataSnapshot.getChildren()) {
+                        Herb herb = herbSnapshot.getValue(Herb.class);
+                        if (herb != null) {
+                            // Get the probability from finalizedLabels
+                            Double probability = entry.getValue();
+
+                            // Create a Pair of Herb and its probability
+                            Pair<Herb, Double> herbWithProbability = new Pair<>(herb, probability);
+
+                            // Add the matching herb to the list
+                            matchingHerbs.add(herbWithProbability);
+                        }
+                    }
+
+                    // Do something with the matchingHerbs, e.g., display them
+                    displayMatchingHerbs(matchingHerbs);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    Log.e("Firebase", "Herb fetch failed: " + databaseError.getMessage());
+                }
+            });
         }
-
-        while (!sortedLabels.isEmpty()) {
-            topKLabels.add(sortedLabels.poll());
-        }
-
-        // Reverse the list to have the highest probabilities first
-        Collections.reverse(topKLabels);
-
-        return topKLabels;
     }
 
-    private List<Map.Entry<String, Float>> changeActualHerbNames(List<Map.Entry<String, Float>> topKLabels) {
-        List<Map.Entry<String, Float>> updatedLabels = new ArrayList<>();
+    private void displayMatchingHerbs(List<Pair<Herb, Double>> matchingHerbs) {
+        // Implement the code to display the matching herbs with their probabilities
+        // This will depend on how you want to present this information in your app
+    }
+
+    private List<Map.Entry<String, Double>> finalizeActualHerbLabels(List<Map.Entry<String, Float>> topKLabels) {
+        List<Map.Entry<String, Double>> updatedLabels = new ArrayList<>();
 
         // Define a mapping of herb label names to actual herb names
         Map<String, String> herbNameMapping = new HashMap<>();
@@ -191,17 +227,42 @@ public class TFLiteModelExecutor {
             String className = entry.getKey();
             Float probability = entry.getValue();
 
-            // Check if there is a actual herb name mapping for this class
+            // Check if there is an actual herb name mapping for this class
             if (herbNameMapping.containsKey(className)) {
                 String updatedLabel = herbNameMapping.get(className);
-                updatedLabels.add(new AbstractMap.SimpleEntry<>(updatedLabel, probability));
+                // Convert the probability to a double and keep it as a number
+                double probabilityPercentage = probability * 100.0;
+                updatedLabels.add(new AbstractMap.SimpleEntry<>(updatedLabel, probabilityPercentage));
             } else {
                 // Use the original class name if there is no mapping
-                updatedLabels.add(new AbstractMap.SimpleEntry<>(className, probability));
+                // Convert the probability to a double and keep it as a number
+                double probabilityPercentage = probability * 100.0;
+                updatedLabels.add(new AbstractMap.SimpleEntry<>(className, probabilityPercentage));
             }
         }
 
         return updatedLabels;
+    }
+
+    private List<Map.Entry<String, Float>> getTopKLabels() {
+        List<Map.Entry<String, Float>> topKLabels = new ArrayList<>();
+
+        for (int i = 0; i < labelList.size(); ++i) {
+            sortedLabels.add(
+                    new AbstractMap.SimpleEntry<>(labelList.get(i), labelProbArray[0][i]));
+            if (sortedLabels.size() > RESULTS_TO_SHOW) {
+                sortedLabels.poll();
+            }
+        }
+
+        while (!sortedLabels.isEmpty()) {
+            topKLabels.add(sortedLabels.poll());
+        }
+
+        // Reverse the list to have the highest probabilities first
+        Collections.reverse(topKLabels);
+
+        return topKLabels;
     }
 
     private PriorityQueue<Map.Entry<String, Float>> sortedLabels =
