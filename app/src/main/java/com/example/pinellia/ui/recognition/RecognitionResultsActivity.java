@@ -25,6 +25,7 @@ import com.example.pinellia.model.Herb;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,8 +33,11 @@ public class RecognitionResultsActivity extends AppCompatActivity {
 
     private ActivityRecognitionResultsBinding binding;
     private TFLiteModelExecutor tfliteModelExecutor;
+    private List<Map.Entry<String, Float>> finalizedLabels = new ArrayList<>();
     private List<Pair<Herb, Float>> herbResultList = new ArrayList<>();
+    private List<Pair<Herb, Float>> topHerbResults = new ArrayList<>();
     private HerbResultAdapter herbRecognitionResultsAdapter;
+    private int MAX_RESULT = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,7 @@ public class RecognitionResultsActivity extends AppCompatActivity {
 
         // Set up RecyclerView to display herbs recognition results
         binding.recyclerViewHerbRecognition.setLayoutManager(new LinearLayoutManager(this));
-        herbRecognitionResultsAdapter = new HerbResultAdapter(herbResultList);
+        herbRecognitionResultsAdapter = new HerbResultAdapter(topHerbResults);
         binding.recyclerViewHerbRecognition.setAdapter(herbRecognitionResultsAdapter);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -105,18 +109,45 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         // Resize and preprocess the image
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(capturedBitmap, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, true);
 
-        tfliteModelExecutor.runInference(resizedBitmap, new TFLiteModelExecutor.Callback<List<Pair<Herb, Float>>>() {
+        finalizedLabels = tfliteModelExecutor.runInference(resizedBitmap);
+
+        tfliteModelExecutor.retrieveAllHerbs(new TFLiteModelExecutor.AllHerbsCallback() {
             @Override
-            public void onCallback(List<Pair<Herb, Float>> herbProbList) {
+            public void onAllHerbsRetrieved(List<Herb> herbList) {
+                List<Pair<Herb, Float>> accurateResults = new ArrayList<>();
 
-                // Clear the existing data in herbResultList
-                herbResultList.clear();
+                for (Map.Entry<String, Float> entry : finalizedLabels) {
+                    for (Herb herb : herbList) {
+                        String herbName = entry.getKey();
+                        if (herb.getName().equals(herbName)) {
+                            // Herb name matches a name in finalizedLabels, add it to herbResultList
+                            herbResultList.add(new Pair<>(herb, entry.getValue()));
+                        }
+                    }
+                }
 
-                // Add the new data
-                herbResultList.addAll(herbProbList);
+                for (Pair<Herb, Float> herbPair : herbResultList) {
+                    // Convert the Float probability to Double
+                    Double probability = (double) herbPair.second * 100.0; // Convert to percentage
 
-                // Notify the adapter that the data has changed
+                    if (probability > 50.0) {
+                        // Add herbs with probabilities greater than 50
+                        accurateResults.add(new Pair<>(herbPair.first, herbPair.second));
+                    }
+                }
+
+                // Display the top results, if available
+                for (int i = 0; i < Math.min(MAX_RESULT, topHerbResults.size()); i++) {
+                    topHerbResults.add(accurateResults.get(i));
+                }
+
                 herbRecognitionResultsAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onAllHerbsError(Exception e) {
+                // Handle the error
+                Toast.makeText(RecognitionResultsActivity.this, "Error retrieving herbs: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
 
