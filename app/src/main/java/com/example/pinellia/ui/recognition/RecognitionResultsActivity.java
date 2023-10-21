@@ -1,11 +1,10 @@
 package com.example.pinellia.ui.recognition;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Pair;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -18,11 +17,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.pinellia.R;
 import com.example.pinellia.databinding.ActivityRecognitionResultsBinding;
+import com.example.pinellia.model.Herb;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,6 +29,7 @@ public class RecognitionResultsActivity extends AppCompatActivity {
 
     private ActivityRecognitionResultsBinding binding;
     private TFLiteModelExecutor tfliteModelExecutor;
+    private List<Pair<Herb, Double>> herbResultList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,10 +96,9 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         // Resize and preprocess the image
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(capturedBitmap, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, true);
 
-        String textToShow = tfliteModelExecutor.runInference(resizedBitmap);
-        resizedBitmap.recycle();
+        herbResultList = tfliteModelExecutor.runInference(resizedBitmap);
 
-        binding.textViewResults.setText(textToShow);
+        resizedBitmap.recycle();
     }
 
     private void loadAndDisplayImage(String imagePath) {

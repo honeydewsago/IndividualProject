@@ -54,6 +54,8 @@ public class TFLiteModelExecutor {
     private int[] intValues = new int[IMG_SIZE_X * IMG_SIZE_Y];
     private float[][] labelProbArray = null;
 
+    private List<Pair<Herb, Double>> herbResultsList = new ArrayList<>();
+
     public TFLiteModelExecutor(Activity activity) throws IOException {
         tflite = new Interpreter(loadModelFile(activity));
         labelList = loadLabelList(activity);
@@ -85,40 +87,38 @@ public class TFLiteModelExecutor {
         return labelList;
     }
 
-    public String runInference(Bitmap bitmap) {
+    public List<Pair<Herb, Double>> runInference(Bitmap bitmap) {
+
         if (tflite == null) {
             Log.e("tflite", "TFLite Model has not been initialized. Unable to run inference.");
-            return "Uninitialized TFLite Model";
+        }
+        else {
+            convertBitmapToByteBuffer(bitmap);
+
+            long startTime = SystemClock.uptimeMillis();
+            tflite.run(imageData, labelProbArray);
+
+            long endTime = SystemClock.uptimeMillis();
+            Log.d("tflite", "Timecost to run model inference: " + Long.toString(endTime - startTime));
+
+            List<Map.Entry<String, Float>> topKLabels = getTopKLabels();
+            List<Map.Entry<String, Double>> finalizedLabels = finalizeActualHerbLabels(topKLabels);
+
+            getHerbList(finalizedLabels, new Callback<List<Pair<Herb, Double>>>() {
+                @Override
+                public void onCallback(List<Pair<Herb, Double>> herbProbList) {
+
+                    herbResultsList = herbProbList;
+
+                    // Log herbProbList
+                    for (Pair<Herb, Double> herbProb : herbProbList) {
+                        Log.d("tflite", "Label: " + herbProb.first.getName() + ", Probability: " + herbProb.second);
+                    }
+                }
+            });
         }
 
-        convertBitmapToByteBuffer(bitmap);
-
-        long startTime = SystemClock.uptimeMillis();
-        tflite.run(imageData, labelProbArray);
-
-        long endTime = SystemClock.uptimeMillis();
-        Log.d("tflite", "Timecost to run model inference: " + Long.toString(endTime - startTime));
-
-//        getTopKLabels();
-
-        // print the results
-//        String textToShow = printTopKLabels();
-
-        List<Map.Entry<String, Float>> topKLabels = getTopKLabels();
-        List<Map.Entry<String, Double>> finalizedLabels = finalizeActualHerbLabels(topKLabels);
-        getHerbList(finalizedLabels);
-
-        // Log the updated labels to the console
-        for (Map.Entry<String, Float> entry : topKLabels) {
-            String label = entry.getKey();
-            Float probability = entry.getValue();
-
-            Log.d("tflite", "Label: " + label + ", Probability: " + probability);
-        }
-
-//        textToShow = Long.toString(endTime - startTime) + "ms" + textToShow;
-        String textToShow = "test";
-        return textToShow;
+        return herbResultsList;
     }
 
     private void convertBitmapToByteBuffer(Bitmap bitmap) {
@@ -139,68 +139,49 @@ public class TFLiteModelExecutor {
         }
     }
 
-//    private String printTopKLabels() {
-//        for (int i = 0; i < labelList.size(); ++i) {
-//            sortedLabels.add(
-//                    new AbstractMap.SimpleEntry<>(labelList.get(i), labelProbArray[0][i]));
-//            if (sortedLabels.size() > RESULTS_TO_SHOW) {
-//                sortedLabels.poll();
-//            }
-//        }
-//        String textToShow = "";
-//        final int size = sortedLabels.size();
-//        for (int i = 0; i < size; ++i) {
-//            Map.Entry<String, Float> label = sortedLabels.poll();
-//            textToShow = String.format("\n%s: %4.2f",label.getKey(),label.getValue()) + textToShow;
-//        }
-//        return textToShow;
-//    }
-
-    private void getHerbList(List<Map.Entry<String, Double>> finalizedLabels) {
+    private void getHerbList(List<Map.Entry<String, Double>> finalizedLabels, Callback<List<Pair<Herb, Double>>> callback) {
         DatabaseReference herbsRef = FirebaseDatabase.getInstance().getReference("herbs");
 
-        // Create a list to store the matching herbs
         List<Pair<Herb, Double>> matchingHerbs = new ArrayList<>();
+        final int[] remainingQueries = {finalizedLabels.size()};
 
         for (Map.Entry<String, Double> entry : finalizedLabels) {
             String herbName = entry.getKey();
 
-            // Query the herbs that match the herbName
             Query query = herbsRef.orderByChild("name").equalTo(herbName);
-
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     for (DataSnapshot herbSnapshot : dataSnapshot.getChildren()) {
                         Herb herb = herbSnapshot.getValue(Herb.class);
                         if (herb != null) {
-                            // Get the probability from finalizedLabels
                             Double probability = entry.getValue();
-
-                            // Create a Pair of Herb and its probability
                             Pair<Herb, Double> herbWithProbability = new Pair<>(herb, probability);
-
-                            // Add the matching herb to the list
                             matchingHerbs.add(herbWithProbability);
                         }
                     }
-
-                    // Do something with the matchingHerbs, e.g., display them
-                    displayMatchingHerbs(matchingHerbs);
+                    remainingQueries[0]--;
+                    if (remainingQueries[0] == 0) {
+                        callback.onCallback(matchingHerbs);
+                    }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     Log.e("Firebase", "Herb fetch failed: " + databaseError.getMessage());
+                    remainingQueries[0]--;
+                    if (remainingQueries[0] == 0) {
+                        callback.onCallback(matchingHerbs);
+                    }
                 }
             });
         }
     }
 
-    private void displayMatchingHerbs(List<Pair<Herb, Double>> matchingHerbs) {
-        // Implement the code to display the matching herbs with their probabilities
-        // This will depend on how you want to present this information in your app
+    public interface Callback<T> {
+        void onCallback(T data);
     }
+
 
     private List<Map.Entry<String, Double>> finalizeActualHerbLabels(List<Map.Entry<String, Float>> topKLabels) {
         List<Map.Entry<String, Double>> updatedLabels = new ArrayList<>();
