@@ -3,7 +3,6 @@ package com.example.pinellia.ui.recognition;
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.SystemClock;
 import android.util.Log;
 
@@ -14,7 +13,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.tensorflow.lite.Interpreter;
@@ -54,7 +52,7 @@ public class TFLiteModelExecutor {
     private int[] intValues = new int[IMG_SIZE_X * IMG_SIZE_Y];
     private float[][] labelProbArray = null;
 
-    private List<Pair<Herb, Float>> herbResultsList = new ArrayList<>();
+    private List<Map.Entry<String, Float>> finalizedLabels = new ArrayList<>();
 
     public TFLiteModelExecutor(Activity activity) throws IOException {
         tflite = new Interpreter(loadModelFile(activity));
@@ -87,7 +85,7 @@ public class TFLiteModelExecutor {
         return labelList;
     }
 
-    public void runInference(Bitmap bitmap, final Callback<List<Pair<Herb, Float>>> callback) {
+    public List<Map.Entry<String, Float>> runInference(Bitmap bitmap) {
         if (tflite == null) {
             Log.e("tflite", "TFLite Model has not been initialized. Unable to run inference.");
         } else {
@@ -100,21 +98,10 @@ public class TFLiteModelExecutor {
             Log.d("tflite", "Timecost to run model inference: " + Long.toString(endTime - startTime));
 
             List<Map.Entry<String, Float>> topKLabels = getTopKLabels();
-            List<Map.Entry<String, Float>> finalizedLabels = finalizeActualHerbLabels(topKLabels);
-
-            getHerbList(finalizedLabels, new Callback<List<Pair<Herb, Float>>>() {
-                @Override
-                public void onCallback(List<Pair<Herb, Float>> herbProbList) {
-                    // Log herbProbList
-                    for (Pair<Herb, Float> herbProb : herbProbList) {
-                        Log.d("tflite", "Label: " + herbProb.first.getName() + ", Probability: " + herbProb.second);
-                    }
-
-                    // Pass the data back through the callback
-                    callback.onCallback(herbProbList);
-                }
-            });
+            finalizedLabels = finalizeActualHerbLabels(topKLabels);
         }
+
+        return finalizedLabels;
     }
 
     private void convertBitmapToByteBuffer(Bitmap bitmap) {
@@ -133,49 +120,6 @@ public class TFLiteModelExecutor {
                 imageData.putFloat((((val) & 0xFF)- IMG_MEAN)/ IMG_STD);
             }
         }
-    }
-
-    private void getHerbList(List<Map.Entry<String, Float>> finalizedLabels, Callback<List<Pair<Herb, Float>>> callback) {
-        DatabaseReference herbsRef = FirebaseDatabase.getInstance().getReference("herbs");
-
-        List<Pair<Herb, Float>> matchingHerbs = new ArrayList<>();
-        final int[] remainingQueries = {finalizedLabels.size()};
-
-        for (Map.Entry<String, Float> entry : finalizedLabels) {
-            String herbName = entry.getKey();
-
-            Query query = herbsRef.orderByChild("name").equalTo(herbName);
-            query.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for (DataSnapshot herbSnapshot : dataSnapshot.getChildren()) {
-                        Herb herb = herbSnapshot.getValue(Herb.class);
-                        if (herb != null) {
-                            Float probability = entry.getValue();
-                            Pair<Herb, Float> herbWithProbability = new Pair<>(herb, probability);
-                            matchingHerbs.add(herbWithProbability);
-                        }
-                    }
-                    remainingQueries[0]--;
-                    if (remainingQueries[0] == 0) {
-                        callback.onCallback(matchingHerbs);
-                    }
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    Log.e("Firebase", "Herb fetch failed: " + databaseError.getMessage());
-                    remainingQueries[0]--;
-                    if (remainingQueries[0] == 0) {
-                        callback.onCallback(matchingHerbs);
-                    }
-                }
-            });
-        }
-    }
-
-    public interface Callback<T> {
-        void onCallback(T data);
     }
 
     private List<Map.Entry<String, Float>> finalizeActualHerbLabels(List<Map.Entry<String, Float>> topKLabels) {
@@ -233,6 +177,11 @@ public class TFLiteModelExecutor {
         // Reverse the list to have the highest probabilities first
         Collections.reverse(topKLabels);
 
+        for (Map.Entry<String, Float> entry: topKLabels) {
+            // Log each entry (label and probability)
+            Log.d("tflite", "Entry Label: " + entry.getKey() + ", Probability: " + entry.getValue());
+        }
+
         return topKLabels;
     }
 
@@ -245,6 +194,35 @@ public class TFLiteModelExecutor {
                             return (o1.getValue()).compareTo(o2.getValue());
                         }
                     });
+
+    public void retrieveAllHerbs(final TFLiteModelExecutor.AllHerbsCallback callback) {
+
+        DatabaseReference herbDatabaseReference = FirebaseDatabase.getInstance().getReference("herbs");
+        herbDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Herb> herbList = new ArrayList<>();
+
+                for (DataSnapshot herbSnapshot : dataSnapshot.getChildren()) {
+                    Herb herb = herbSnapshot.getValue(Herb.class);
+                    herbList.add(herb);
+                }
+
+                callback.onAllHerbsRetrieved(herbList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onAllHerbsError(databaseError.toException());
+            }
+        });
+    }
+
+    public interface AllHerbsCallback {
+        void onAllHerbsRetrieved(List<Herb> herbList);
+
+        void onAllHerbsError(Exception e);
+    }
 
     public void close() {
         tflite.close();
