@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -17,10 +18,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.pinellia.R;
-import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.adapter.HerbResultAdapter;
 import com.example.pinellia.databinding.ActivityRecognitionResultsBinding;
 import com.example.pinellia.model.Herb;
+import com.example.pinellia.ui.BrowseHistoryActivity;
+import com.example.pinellia.ui.HerbDetailsActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,6 +68,16 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         binding.recyclerViewHerbRecognition.setLayoutManager(new LinearLayoutManager(this));
         herbRecognitionResultsAdapter = new HerbResultAdapter(topHerbResults);
         binding.recyclerViewHerbRecognition.setAdapter(herbRecognitionResultsAdapter);
+
+        herbRecognitionResultsAdapter.setOnItemClickListener(new HerbResultAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Herb herb) {
+                // Launch HerbDetailsActivity activity and pass the clicked herb data
+                Intent intent = new Intent(RecognitionResultsActivity.this, HerbDetailsActivity.class);
+                intent.putExtra("herb", herb);
+                startActivity(intent);
+            }
+        });
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());

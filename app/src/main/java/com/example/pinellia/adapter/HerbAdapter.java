@@ -52,14 +52,14 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
         return herbList.size();
     }
 
-    // Set the click listener
-    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
-    }
-
     // Click listener interface
     public interface OnItemClickListener {
         void onItemClick(Herb herb);
+    }
+
+    // Set the click listener
+    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 
     public class HerbViewHolder extends RecyclerView.ViewHolder {

@@ -14,7 +14,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.pinellia.R;
-import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.ItemHerbCardviewBinding;
 import com.example.pinellia.databinding.ItemHerbRecognitionCardviewBinding;
 import com.example.pinellia.model.Herb;
@@ -23,6 +22,7 @@ import java.util.List;
 
 public class HerbResultAdapter extends RecyclerView.Adapter<HerbResultAdapter.HerbResultViewHolder> {
     private List<Pair<Herb, Float>> herbResultList;
+    private OnItemClickListener itemClickListener;
 
     public HerbResultAdapter(List<Pair<Herb, Float>> herbResultList) {
         this.herbResultList = herbResultList;
@@ -49,12 +49,38 @@ public class HerbResultAdapter extends RecyclerView.Adapter<HerbResultAdapter.He
         return herbResultList.size();
     }
 
+    // Click listener interface
+    public interface OnItemClickListener {
+        void onItemClick(Herb herb);
+    }
+
+    // Set the click listener
+    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
+    }
+
     public class HerbResultViewHolder extends RecyclerView.ViewHolder {
         private final ItemHerbRecognitionCardviewBinding binding;
 
         public HerbResultViewHolder(ItemHerbRecognitionCardviewBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+
+            binding.getRoot().setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+
+                    if (position != RecyclerView.NO_POSITION) {
+                        Pair<Herb, Float> selectedHerb = herbResultList.get(position);
+
+                        // Notify the click listener that an item has been clicked
+                        if (itemClickListener != null) {
+                            itemClickListener.onItemClick(selectedHerb.first);
+                        }
+                    }
+                }
+            });
         }
 
         public void bind(Pair<Herb, Float> herbResult) {

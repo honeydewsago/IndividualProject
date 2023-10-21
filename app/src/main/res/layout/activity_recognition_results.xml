@@ -46,18 +46,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/bg_green_gradient" />
 
-        <TextView
-            android:id="@+id/textViewNoMoreResults"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="No additional results found. Results with lower accuracy are filtered out."
-            android:textAlignment="center"
-            android:textStyle="italic"
-            app:layout_constraintEnd_toEndOf="@+id/textViewResults"
-            app:layout_constraintStart_toStartOf="@+id/textViewResults"
-            app:layout_constraintTop_toBottomOf="@+id/recyclerViewHerbRecognition" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewHerbRecognition"
             android:layout_width="0dp"
@@ -66,6 +54,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewResults" />
+
+        <TextView
+            android:id="@+id/textViewNoMoreResults"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="No additional results found. Results with lower accuracy are filtered out."
+            android:textAlignment="center"
+            android:textStyle="italic"
+            app:layout_constraintEnd_toEndOf="@+id/textViewResults"
+            app:layout_constraintStart_toStartOf="@+id/textViewResults"
+            app:layout_constraintTop_toBottomOf="@+id/recyclerViewHerbRecognition" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
