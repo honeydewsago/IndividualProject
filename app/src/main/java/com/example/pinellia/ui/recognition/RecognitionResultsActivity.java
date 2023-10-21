@@ -133,11 +133,12 @@ public class RecognitionResultsActivity extends AppCompatActivity {
                     if (probability > 50.0) {
                         // Add herbs with probabilities greater than 50
                         accurateResults.add(new Pair<>(herbPair.first, herbPair.second));
+                        Log.d("tflite", "Accurate Herb Name: " + herbPair.first.getName() + ", Probability: " + herbPair.second + "%");
                     }
                 }
 
                 // Display the top results, if available
-                for (int i = 0; i < Math.min(MAX_RESULT, topHerbResults.size()); i++) {
+                for (int i = 0; i < Math.min(MAX_RESULT, accurateResults.size()); i++) {
                     topHerbResults.add(accurateResults.get(i));
                 }
 
