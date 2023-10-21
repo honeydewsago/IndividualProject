@@ -2,6 +2,7 @@ package com.example.pinellia.ui.recognition;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.util.Pair;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.pinellia.R;
+import com.example.pinellia.adapter.HerbAdapter;
+import com.example.pinellia.adapter.HerbResultAdapter;
 import com.example.pinellia.databinding.ActivityRecognitionResultsBinding;
 import com.example.pinellia.model.Herb;
 
@@ -29,7 +32,8 @@ public class RecognitionResultsActivity extends AppCompatActivity {
 
     private ActivityRecognitionResultsBinding binding;
     private TFLiteModelExecutor tfliteModelExecutor;
-    private List<Pair<Herb, Double>> herbResultList = new ArrayList<>();
+    private List<Pair<Herb, Float>> herbResultList = new ArrayList<>();
+    private HerbResultAdapter herbRecognitionResultsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,11 @@ public class RecognitionResultsActivity extends AppCompatActivity {
 
         // Show the progress bar
         binding.progressBar.setVisibility(View.VISIBLE);
+
+        // Set up RecyclerView to display herbs recognition results
+        binding.recyclerViewHerbRecognition.setLayoutManager(new LinearLayoutManager(this));
+        herbRecognitionResultsAdapter = new HerbResultAdapter(herbResultList);
+        binding.recyclerViewHerbRecognition.setAdapter(herbRecognitionResultsAdapter);
 
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -96,7 +105,20 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         // Resize and preprocess the image
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(capturedBitmap, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, true);
 
-        herbResultList = tfliteModelExecutor.runInference(resizedBitmap);
+        tfliteModelExecutor.runInference(resizedBitmap, new TFLiteModelExecutor.Callback<List<Pair<Herb, Float>>>() {
+            @Override
+            public void onCallback(List<Pair<Herb, Float>> herbProbList) {
+
+                // Clear the existing data in herbResultList
+                herbResultList.clear();
+
+                // Add the new data
+                herbResultList.addAll(herbProbList);
+
+                // Notify the adapter that the data has changed
+                herbRecognitionResultsAdapter.notifyDataSetChanged();
+            }
+        });
 
         resizedBitmap.recycle();
     }

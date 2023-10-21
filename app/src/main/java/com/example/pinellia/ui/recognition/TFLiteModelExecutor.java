@@ -54,7 +54,7 @@ public class TFLiteModelExecutor {
     private int[] intValues = new int[IMG_SIZE_X * IMG_SIZE_Y];
     private float[][] labelProbArray = null;
 
-    private List<Pair<Herb, Double>> herbResultsList = new ArrayList<>();
+    private List<Pair<Herb, Float>> herbResultsList = new ArrayList<>();
 
     public TFLiteModelExecutor(Activity activity) throws IOException {
         tflite = new Interpreter(loadModelFile(activity));
@@ -87,12 +87,10 @@ public class TFLiteModelExecutor {
         return labelList;
     }
 
-    public List<Pair<Herb, Double>> runInference(Bitmap bitmap) {
-
+    public void runInference(Bitmap bitmap, final Callback<List<Pair<Herb, Float>>> callback) {
         if (tflite == null) {
             Log.e("tflite", "TFLite Model has not been initialized. Unable to run inference.");
-        }
-        else {
+        } else {
             convertBitmapToByteBuffer(bitmap);
 
             long startTime = SystemClock.uptimeMillis();
@@ -102,23 +100,21 @@ public class TFLiteModelExecutor {
             Log.d("tflite", "Timecost to run model inference: " + Long.toString(endTime - startTime));
 
             List<Map.Entry<String, Float>> topKLabels = getTopKLabels();
-            List<Map.Entry<String, Double>> finalizedLabels = finalizeActualHerbLabels(topKLabels);
+            List<Map.Entry<String, Float>> finalizedLabels = finalizeActualHerbLabels(topKLabels);
 
-            getHerbList(finalizedLabels, new Callback<List<Pair<Herb, Double>>>() {
+            getHerbList(finalizedLabels, new Callback<List<Pair<Herb, Float>>>() {
                 @Override
-                public void onCallback(List<Pair<Herb, Double>> herbProbList) {
-
-                    herbResultsList = herbProbList;
-
+                public void onCallback(List<Pair<Herb, Float>> herbProbList) {
                     // Log herbProbList
-                    for (Pair<Herb, Double> herbProb : herbProbList) {
+                    for (Pair<Herb, Float> herbProb : herbProbList) {
                         Log.d("tflite", "Label: " + herbProb.first.getName() + ", Probability: " + herbProb.second);
                     }
+
+                    // Pass the data back through the callback
+                    callback.onCallback(herbProbList);
                 }
             });
         }
-
-        return herbResultsList;
     }
 
     private void convertBitmapToByteBuffer(Bitmap bitmap) {
@@ -139,13 +135,13 @@ public class TFLiteModelExecutor {
         }
     }
 
-    private void getHerbList(List<Map.Entry<String, Double>> finalizedLabels, Callback<List<Pair<Herb, Double>>> callback) {
+    private void getHerbList(List<Map.Entry<String, Float>> finalizedLabels, Callback<List<Pair<Herb, Float>>> callback) {
         DatabaseReference herbsRef = FirebaseDatabase.getInstance().getReference("herbs");
 
-        List<Pair<Herb, Double>> matchingHerbs = new ArrayList<>();
+        List<Pair<Herb, Float>> matchingHerbs = new ArrayList<>();
         final int[] remainingQueries = {finalizedLabels.size()};
 
-        for (Map.Entry<String, Double> entry : finalizedLabels) {
+        for (Map.Entry<String, Float> entry : finalizedLabels) {
             String herbName = entry.getKey();
 
             Query query = herbsRef.orderByChild("name").equalTo(herbName);
@@ -155,8 +151,8 @@ public class TFLiteModelExecutor {
                     for (DataSnapshot herbSnapshot : dataSnapshot.getChildren()) {
                         Herb herb = herbSnapshot.getValue(Herb.class);
                         if (herb != null) {
-                            Double probability = entry.getValue();
-                            Pair<Herb, Double> herbWithProbability = new Pair<>(herb, probability);
+                            Float probability = entry.getValue();
+                            Pair<Herb, Float> herbWithProbability = new Pair<>(herb, probability);
                             matchingHerbs.add(herbWithProbability);
                         }
                     }
@@ -182,9 +178,8 @@ public class TFLiteModelExecutor {
         void onCallback(T data);
     }
 
-
-    private List<Map.Entry<String, Double>> finalizeActualHerbLabels(List<Map.Entry<String, Float>> topKLabels) {
-        List<Map.Entry<String, Double>> updatedLabels = new ArrayList<>();
+    private List<Map.Entry<String, Float>> finalizeActualHerbLabels(List<Map.Entry<String, Float>> topKLabels) {
+        List<Map.Entry<String, Float>> updatedLabels = new ArrayList<>();
 
         // Define a mapping of herb label names to actual herb names
         Map<String, String> herbNameMapping = new HashMap<>();
@@ -211,14 +206,9 @@ public class TFLiteModelExecutor {
             // Check if there is an actual herb name mapping for this class
             if (herbNameMapping.containsKey(className)) {
                 String updatedLabel = herbNameMapping.get(className);
-                // Convert the probability to a double and keep it as a number
-                double probabilityPercentage = probability * 100.0;
-                updatedLabels.add(new AbstractMap.SimpleEntry<>(updatedLabel, probabilityPercentage));
+                updatedLabels.add(new AbstractMap.SimpleEntry<>(updatedLabel, probability));
             } else {
-                // Use the original class name if there is no mapping
-                // Convert the probability to a double and keep it as a number
-                double probabilityPercentage = probability * 100.0;
-                updatedLabels.add(new AbstractMap.SimpleEntry<>(className, probabilityPercentage));
+                updatedLabels.add(new AbstractMap.SimpleEntry<>(className, probability));
             }
         }
 
