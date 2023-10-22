@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.pinellia.databinding.ActivitySearchHerbBinding;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.model.Herb;
+import com.example.pinellia.viewmodel.SearchHerbViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

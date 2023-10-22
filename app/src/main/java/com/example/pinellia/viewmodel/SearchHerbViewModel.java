@@ -1,4 +1,4 @@
-package com.example.pinellia.ui;
+package com.example.pinellia.viewmodel;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

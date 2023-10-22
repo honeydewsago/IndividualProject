@@ -1,4 +1,4 @@
-package com.example.pinellia.ui;
+package com.example.pinellia.viewmodel;
 
 import android.content.SharedPreferences;
 
