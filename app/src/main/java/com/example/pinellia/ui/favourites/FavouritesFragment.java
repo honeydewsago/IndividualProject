@@ -26,6 +26,7 @@ import com.example.pinellia.model.Herb;
 import com.example.pinellia.ui.AboutUsActivity;
 import com.example.pinellia.ui.BrowseHistoryActivity;
 import com.example.pinellia.ui.HerbDetailsActivity;
+import com.example.pinellia.ui.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -157,8 +158,9 @@ public class FavouritesFragment extends Fragment {
             showAlertDialog();
             return true;
         }else if (id == R.id.action_settings) {
-            // Handle Settings click
-            Toast.makeText(requireContext(), "Settings clicked", Toast.LENGTH_SHORT).show();
+            // Launch SettingsActivity
+            Intent intent = new Intent(requireContext(), SettingsActivity.class);
+            startActivity(intent);
             return true;
         } else if (id == R.id.action_about) {
             // Launch AboutUsActivity
