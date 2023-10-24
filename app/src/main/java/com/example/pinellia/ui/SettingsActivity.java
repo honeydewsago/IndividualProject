@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -39,15 +40,21 @@ public class SettingsActivity extends AppCompatActivity {
         binding.buttonClearCache.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onClearCacheClicked();
-            }
-        });
+                binding.textViewImageDataSize.setVisibility(View.INVISIBLE);
+                binding.progressBarClearCache.setVisibility(View.VISIBLE);
 
-        binding.buttonContact.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Implement logic to contact support
-                // For example, you can launch an email intent to contact support.
+                // Time the execution by 2 seconds
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        onClearCacheClicked();
+                        calculateAndDisplayDataSize();
+
+                        binding.textViewImageDataSize.setVisibility(View.VISIBLE);
+                        binding.progressBarClearCache.setVisibility(View.INVISIBLE);
+                    }
+                }, 2000); // 2000 milliseconds (2 seconds)
             }
         });
 
@@ -57,13 +64,13 @@ public class SettingsActivity extends AppCompatActivity {
 
     // Call this function when the user taps the clear cache button
     private void onClearCacheClicked() {
-        // Specify the directory where your images are stored
+        // Get the directory where images are stored
         String directoryPath = getExternalFilesDir(null).getAbsolutePath();
 
         clearImagesInDirectory(directoryPath);
 
         // Notify the user
-        Toast.makeText(this, "Cache cleared.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Image cache cleared.", Toast.LENGTH_SHORT).show();
     }
 
     // Function to clear images in the external directory
