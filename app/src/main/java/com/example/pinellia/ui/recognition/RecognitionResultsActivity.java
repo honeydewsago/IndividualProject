@@ -1,11 +1,12 @@
 package com.example.pinellia.ui.recognition;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.util.Pair;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,12 +18,16 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.pinellia.R;
+import com.example.pinellia.adapter.HerbResultAdapter;
 import com.example.pinellia.databinding.ActivityRecognitionResultsBinding;
+import com.example.pinellia.model.Herb;
+import com.example.pinellia.ui.BrowseHistoryActivity;
+import com.example.pinellia.ui.HerbDetailsActivity;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -30,6 +35,11 @@ public class RecognitionResultsActivity extends AppCompatActivity {
 
     private ActivityRecognitionResultsBinding binding;
     private TFLiteModelExecutor tfliteModelExecutor;
+    private List<Map.Entry<String, Float>> finalizedLabels = new ArrayList<>();
+    private List<Pair<Herb, Float>> herbResultList = new ArrayList<>();
+    private List<Pair<Herb, Float>> topHerbResults = new ArrayList<>();
+    private HerbResultAdapter herbRecognitionResultsAdapter;
+    private int MAX_RESULT = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +64,21 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         // Show the progress bar
         binding.progressBar.setVisibility(View.VISIBLE);
 
+        // Set up RecyclerView to display herbs recognition results
+        binding.recyclerViewHerbRecognition.setLayoutManager(new LinearLayoutManager(this));
+        herbRecognitionResultsAdapter = new HerbResultAdapter(topHerbResults);
+        binding.recyclerViewHerbRecognition.setAdapter(herbRecognitionResultsAdapter);
+
+        herbRecognitionResultsAdapter.setOnItemClickListener(new HerbResultAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Herb herb) {
+                // Launch HerbDetailsActivity activity and pass the clicked herb data
+                Intent intent = new Intent(RecognitionResultsActivity.this, HerbDetailsActivity.class);
+                intent.putExtra("herb", herb);
+                startActivity(intent);
+            }
+        });
+
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
@@ -73,15 +98,7 @@ public class RecognitionResultsActivity extends AppCompatActivity {
                     public void run() {
                         //UI Thread processing
                         if (tfliteModelExecutor != null) {
-//                            Bitmap bitmap = processImageToBGR(imagePath);
-//                            binding.imageViewProcess.setImageBitmap(bitmap);
-
-
                             classifyImage(imagePath);
-
-//                            Bitmap bitmap = processImageToBGRWithImageNet(imagePath);
-//                            binding.imageViewProcess.setImageBitmap(bitmap);
-//                            classifyImageResNet(bitmap);
 
                             // Hide the progress bar after classification is done
                             binding.progressBar.setVisibility(View.GONE);
@@ -90,138 +107,6 @@ public class RecognitionResultsActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    static float[][][] imagenet_preprocess_input_caffe2(Bitmap bitmap) {
-        final float[] imagenet_means_caffe = new float[]{103.939f, 116.779f, 123.68f};
-
-        float[][][] result = new float[bitmap.getHeight()][bitmap.getWidth()][3]; // Assuming RGB
-
-        for (int y = 0; y < bitmap.getHeight(); y++) {
-            for (int x = 0; x < bitmap.getWidth(); x++) {
-                final int px = bitmap.getPixel(x, y);
-
-                // Convert RGB to BGR
-                result[y][x][0] = (Color.red(px) - imagenet_means_caffe[2]) / 255.0f;  // B
-                result[y][x][1] = (Color.green(px) - imagenet_means_caffe[1]) / 255.0f; // G
-                result[y][x][2] = (Color.blue(px) - imagenet_means_caffe[0]) / 255.0f;  // R
-            }
-        }
-
-        return result;
-    }
-
-    static float[][][] imagenet_preprocess_input_caffe( Bitmap bitmap ) {
-        final float[] imagenet_means_caffe = new float[]{103.939f, 116.779f, 123.68f};
-
-        float[][][] result = new float[bitmap.getHeight()][bitmap.getWidth()][3];   // assuming rgb
-        for (int y = 0; y < bitmap.getHeight(); y++) {
-            for (int x = 0; x < bitmap.getWidth(); x++) {
-
-                final int px = bitmap.getPixel(x, y);
-
-                // rgb-->bgr, then subtract means.  no scaling
-                result[y][x][0] = (Color.blue(px) - imagenet_means_caffe[0] );
-                result[y][x][1] = (Color.green(px) - imagenet_means_caffe[1] );
-                result[y][x][2] = (Color.red(px) - imagenet_means_caffe[2] );
-            }
-        }
-
-        return result;
-    }
-
-    private Bitmap processImageToBGRWithImageNet(String path) {
-        Log.d("tflite", "Processing image to BGR");
-
-        // Convert the captured image to a bitmap
-        Bitmap capturedBitmap = BitmapFactory.decodeFile(path);
-
-        // Check if decoding the image was successful
-        if (capturedBitmap == null) {
-            Log.e("tflite", "Failed to decode the image.");
-            return null;
-        }
-
-        // Preprocess the captured image using imagenet_preprocess_input_caffe
-        float[][][] preprocessedImage = imagenet_preprocess_input_caffe2(capturedBitmap);
-
-        // Create a new Bitmap with the same dimensions as the captured image
-        Bitmap resizedBitmap = Bitmap.createBitmap(capturedBitmap.getWidth(), capturedBitmap.getHeight(), Bitmap.Config.ARGB_8888);
-
-        for (int y = 0; y < preprocessedImage.length; y++) {
-            for (int x = 0; x < preprocessedImage[y].length; x++) {
-                int b = (int) preprocessedImage[y][x][0];
-                int g = (int) preprocessedImage[y][x][1];
-                int r = (int) preprocessedImage[y][x][2];
-
-                // Ensure the values are within the 0-255 range
-                b = Math.max(0, Math.min(255, b));
-                g = Math.max(0, Math.min(255, g));
-                r = Math.max(0, Math.min(255, r));
-
-                // Create a color pixel and set it in the Bitmap
-                int colorPixel = Color.rgb(r, g, b);
-                resizedBitmap.setPixel(x, y, colorPixel);
-            }
-        }
-
-        return resizedBitmap;
-    }
-
-    private Bitmap processImageToBGR(String path) {
-        Log.d("tflite", "Displaying processed image");
-
-        // Convert the captured image to a bitmap
-        Bitmap capturedBitmap = BitmapFactory.decodeFile(path);
-
-        Bitmap resizedBitmap = Bitmap.createScaledBitmap(capturedBitmap, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, true);
-
-        // Convert ARGB to BGR and normalize pixel values
-        int width = resizedBitmap.getWidth();
-        int height = resizedBitmap.getHeight();
-        int[] pixels = new int[width * height];
-        resizedBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-
-        // Convert ARGB to BGR, subtract mean values, and normalize pixel values
-        for (int i = 0; i < pixels.length; i++) {
-            int pixel = pixels[i];
-            int blue = (pixel >> 16) & 0xFF;
-            int green = (pixel >> 8) & 0xFF;
-            int red = pixel & 0xFF;
-
-            // Convert to BGR format, subtract mean values, and normalize
-            float blueNorm = (blue - 103.939f) / 255.0f;
-            float greenNorm = (green - 116.779f) / 255.0f;
-            float redNorm = (red - 123.68f) / 255.0f;
-
-            // Clamp values to the range [0, 1]
-            blueNorm = Math.max(0.0f, Math.min(1.0f, blueNorm));
-            greenNorm = Math.max(0.0f, Math.min(1.0f, greenNorm));
-            redNorm = Math.max(0.0f, Math.min(1.0f, redNorm));
-
-            // Convert back to ARGB format
-            int blueFinal = (int) (blueNorm * 255.0f);
-            int greenFinal = (int) (greenNorm * 255.0f);
-            int redFinal = (int) (redNorm * 255.0f);
-
-            pixels[i] = 0xFF000000 | (redFinal << 16) | (greenFinal << 8) | blueFinal;
-        }
-
-        resizedBitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-
-        return resizedBitmap;
-    }
-
-    private void classifyImageResNet(Bitmap bitmap) {
-        if (tfliteModelExecutor == null) {
-            Toast.makeText(this, "Uninitialized tflite model or invalid context.", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String textToShow = tfliteModelExecutor.runInference(bitmap);
-//        bitmap.recycle();
-
-        binding.textViewResults.setText(textToShow);
     }
 
     private void classifyImage(String path) {
@@ -236,10 +121,50 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         // Resize and preprocess the image
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(capturedBitmap, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, true);
 
-        String textToShow = tfliteModelExecutor.runInference(resizedBitmap);
-        resizedBitmap.recycle();
+        finalizedLabels = tfliteModelExecutor.runInference(resizedBitmap);
 
-        binding.textViewResults.setText(textToShow);
+        tfliteModelExecutor.retrieveAllHerbs(new TFLiteModelExecutor.AllHerbsCallback() {
+            @Override
+            public void onAllHerbsRetrieved(List<Herb> herbList) {
+                List<Pair<Herb, Float>> accurateResults = new ArrayList<>();
+
+                for (Map.Entry<String, Float> entry : finalizedLabels) {
+                    for (Herb herb : herbList) {
+                        String herbName = entry.getKey();
+                        if (herb.getName().equals(herbName)) {
+                            // Herb name matches a name in finalizedLabels, add it to herbResultList
+                            herbResultList.add(new Pair<>(herb, entry.getValue()));
+                        }
+                    }
+                }
+
+                for (Pair<Herb, Float> herbPair : herbResultList) {
+                    // Convert the Float probability to Double
+                    Double probability = (double) herbPair.second * 100.0; // Convert to percentage
+
+                    if (probability > 50.0) {
+                        // Add herbs with probabilities greater than 50
+                        accurateResults.add(new Pair<>(herbPair.first, herbPair.second));
+                        Log.d("tflite", "Accurate Herb Name: " + herbPair.first.getName() + ", Probability: " + herbPair.second + "%");
+                    }
+                }
+
+                // Display the top results, if available
+                for (int i = 0; i < Math.min(MAX_RESULT, accurateResults.size()); i++) {
+                    topHerbResults.add(accurateResults.get(i));
+                }
+
+                herbRecognitionResultsAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onAllHerbsError(Exception e) {
+                // Handle the error
+                Toast.makeText(RecognitionResultsActivity.this, "Error retrieving herbs: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        resizedBitmap.recycle();
     }
 
     private void loadAndDisplayImage(String imagePath) {

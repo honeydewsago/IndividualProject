@@ -1,5 +1,6 @@
 package com.example.pinellia.adapter;
 
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +15,12 @@ import com.example.pinellia.R;
 import com.example.pinellia.databinding.ItemHerbCardviewBinding;
 import com.example.pinellia.model.Herb;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder> {
     private List<Herb> herbList;
+    private String symptomUsage;
     private OnItemClickListener itemClickListener;
 
     public HerbAdapter(List<Herb> herbList) {
@@ -29,6 +32,10 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
         herbList.clear();
         herbList.addAll(newHerbList);
         notifyDataSetChanged();
+    }
+
+    public void setSymptomUsage(String symptomUsage) {
+        this.symptomUsage = symptomUsage;
     }
 
     @NonNull
@@ -50,14 +57,14 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
         return herbList.size();
     }
 
-    // Set the click listener
-    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
-        this.itemClickListener = itemClickListener;
-    }
-
     // Click listener interface
     public interface OnItemClickListener {
         void onItemClick(Herb herb);
+    }
+
+    // Set the click listener
+    public void setOnItemClickListener(OnItemClickListener itemClickListener) {
+        this.itemClickListener = itemClickListener;
     }
 
     public class HerbViewHolder extends RecyclerView.ViewHolder {
@@ -86,6 +93,24 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
 
         void bind(Herb herb) {
             binding.textViewName.setText(herb.getName());
+
+            // Check if the symptoms list is empty and update visibility
+            if (herb.getSymptomsList() != null) {
+                if (!herb.getSymptomsList().isEmpty()) {
+                    binding.textViewSymptoms.setVisibility(View.VISIBLE);
+                    if (symptomUsage != null) {
+                        if (symptomUsage.equals("symptom")){
+                            binding.textViewSymptoms.setText("Symptoms: " + TextUtils.join(", ", herb.getSymptomsList()));
+                        }
+                        else {
+                            binding.textViewSymptoms.setText("Usage: " + TextUtils.join(", ", herb.getSymptomsList()));
+                        }
+                    }
+
+                }
+            } else {
+                binding.textViewSymptoms.setVisibility(View.GONE);
+            }
 
             // Load the image from Firebase Storage using Glide
             String imageLink = herb.getImageLink();

@@ -3,9 +3,17 @@ package com.example.pinellia.ui.recognition;
 import android.app.Activity;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.os.SystemClock;
 import android.util.Log;
+
+import androidx.core.util.Pair;
+
+import com.example.pinellia.model.Herb;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.tensorflow.lite.Interpreter;
 
@@ -19,7 +27,9 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -41,6 +51,8 @@ public class TFLiteModelExecutor {
     static final float IMG_STD = 224.0f;
     private int[] intValues = new int[IMG_SIZE_X * IMG_SIZE_Y];
     private float[][] labelProbArray = null;
+
+    private List<Map.Entry<String, Float>> finalizedLabels = new ArrayList<>();
 
     public TFLiteModelExecutor(Activity activity) throws IOException {
         tflite = new Interpreter(loadModelFile(activity));
@@ -73,46 +85,23 @@ public class TFLiteModelExecutor {
         return labelList;
     }
 
-    public String runInference(Bitmap bitmap) {
+    public List<Map.Entry<String, Float>> runInference(Bitmap bitmap) {
         if (tflite == null) {
             Log.e("tflite", "TFLite Model has not been initialized. Unable to run inference.");
-            return "Uninitialized TFLite Model";
+        } else {
+            convertBitmapToByteBuffer(bitmap);
+
+            long startTime = SystemClock.uptimeMillis();
+            tflite.run(imageData, labelProbArray);
+
+            long endTime = SystemClock.uptimeMillis();
+            Log.d("tflite", "Timecost to run model inference: " + Long.toString(endTime - startTime));
+
+            List<Map.Entry<String, Float>> topKLabels = getTopKLabels();
+            finalizedLabels = finalizeActualHerbLabels(topKLabels);
         }
 
-        convertBitmapToByteBuffer(bitmap);
-//        ByteBuffer inputBuffer = convertBitmapToByteBufferBGR(bitmap);
-
-        long startTime = SystemClock.uptimeMillis();
-        tflite.run(imageData, labelProbArray);
-//        tflite.run(inputBuffer, labelProbArray);
-        long endTime = SystemClock.uptimeMillis();
-        Log.d("tflite", "Timecost to run model inference: " + Long.toString(endTime - startTime));
-
-        // print the results
-        String textToShow = printTopKLabels();
-        textToShow = Long.toString(endTime - startTime) + "ms" + textToShow;
-        return textToShow;
-    }
-
-    private ByteBuffer convertBitmapToByteBufferBGR(Bitmap bitmap) {
-
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(4 * BATCH_SIZE * IMG_SIZE_X * IMG_SIZE_Y * PIXEL_SIZE);
-        byteBuffer.order(ByteOrder.nativeOrder());
-
-        int[] intValues = new int[IMG_SIZE_X * IMG_SIZE_Y];
-        bitmap.getPixels(intValues, 0, IMG_SIZE_X, 0, 0, IMG_SIZE_X, IMG_SIZE_Y);
-
-        int pixel = 0;
-        for (int i = 0; i < IMG_SIZE_X; ++i) {
-            for (int j = 0; j < IMG_SIZE_Y; ++j) {
-                final int val = intValues[pixel++];
-                byteBuffer.putFloat(((val >> 16) & 0xFF) / 255.0f); // R
-                byteBuffer.putFloat(((val >> 8) & 0xFF) / 255.0f);  // G
-                byteBuffer.putFloat((val & 0xFF) / 255.0f);         // B
-            }
-        }
-
-        return byteBuffer;
+        return finalizedLabels;
     }
 
     private void convertBitmapToByteBuffer(Bitmap bitmap) {
@@ -133,7 +122,46 @@ public class TFLiteModelExecutor {
         }
     }
 
-    private String printTopKLabels() {
+    private List<Map.Entry<String, Float>> finalizeActualHerbLabels(List<Map.Entry<String, Float>> topKLabels) {
+        List<Map.Entry<String, Float>> updatedLabels = new ArrayList<>();
+
+        // Define a mapping of herb label names to actual herb names
+        Map<String, String> herbNameMapping = new HashMap<>();
+        herbNameMapping.put("aiye", "Mugwort");
+        herbNameMapping.put("baihe", "Lily Bulbs");
+        herbNameMapping.put("chongcao", "Codonopsis Root");
+        herbNameMapping.put("dangshen", "Cordyceps");
+        herbNameMapping.put("fuling", "Poria Cocos");
+        herbNameMapping.put("gancao", "Licorice");
+        herbNameMapping.put("gouqi", "Wolfberry / Gojiberry");
+        herbNameMapping.put("heshouwu", "Tuber Fleeceflower");
+        herbNameMapping.put("huangbai", "Cork-Tree Bark");
+        herbNameMapping.put("huangqi", "Astragalus");
+        herbNameMapping.put("jinyinhua", "Japanese Honeysuckle");
+        herbNameMapping.put("luohanguo", "Monkfruit");
+        herbNameMapping.put("renshen", "Ginseng");
+        herbNameMapping.put("shanyao", "Chinese Yam");
+        herbNameMapping.put("tiannanxing", "Chinese Arisaema");
+
+        for (Map.Entry<String, Float> entry : topKLabels) {
+            String className = entry.getKey();
+            Float probability = entry.getValue();
+
+            // Check if there is an actual herb name mapping for this class
+            if (herbNameMapping.containsKey(className)) {
+                String updatedLabel = herbNameMapping.get(className);
+                updatedLabels.add(new AbstractMap.SimpleEntry<>(updatedLabel, probability));
+            } else {
+                updatedLabels.add(new AbstractMap.SimpleEntry<>(className, probability));
+            }
+        }
+
+        return updatedLabels;
+    }
+
+    private List<Map.Entry<String, Float>> getTopKLabels() {
+        List<Map.Entry<String, Float>> topKLabels = new ArrayList<>();
+
         for (int i = 0; i < labelList.size(); ++i) {
             sortedLabels.add(
                     new AbstractMap.SimpleEntry<>(labelList.get(i), labelProbArray[0][i]));
@@ -141,13 +169,20 @@ public class TFLiteModelExecutor {
                 sortedLabels.poll();
             }
         }
-        String textToShow = "";
-        final int size = sortedLabels.size();
-        for (int i = 0; i < size; ++i) {
-            Map.Entry<String, Float> label = sortedLabels.poll();
-            textToShow = String.format("\n%s: %4.2f",label.getKey(),label.getValue()) + textToShow;
+
+        while (!sortedLabels.isEmpty()) {
+            topKLabels.add(sortedLabels.poll());
         }
-        return textToShow;
+
+        // Reverse the list to have the highest probabilities first
+        Collections.reverse(topKLabels);
+
+        for (Map.Entry<String, Float> entry: topKLabels) {
+            // Log each entry (label and probability)
+            Log.d("tflite", "Entry Label: " + entry.getKey() + ", Probability: " + entry.getValue());
+        }
+
+        return topKLabels;
     }
 
     private PriorityQueue<Map.Entry<String, Float>> sortedLabels =
@@ -159,6 +194,35 @@ public class TFLiteModelExecutor {
                             return (o1.getValue()).compareTo(o2.getValue());
                         }
                     });
+
+    public void retrieveAllHerbs(final TFLiteModelExecutor.AllHerbsCallback callback) {
+
+        DatabaseReference herbDatabaseReference = FirebaseDatabase.getInstance().getReference("herbs");
+        herbDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Herb> herbList = new ArrayList<>();
+
+                for (DataSnapshot herbSnapshot : dataSnapshot.getChildren()) {
+                    Herb herb = herbSnapshot.getValue(Herb.class);
+                    herbList.add(herb);
+                }
+
+                callback.onAllHerbsRetrieved(herbList);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                callback.onAllHerbsError(databaseError.toException());
+            }
+        });
+    }
+
+    public interface AllHerbsCallback {
+        void onAllHerbsRetrieved(List<Herb> herbList);
+
+        void onAllHerbsError(Exception e);
+    }
 
     public void close() {
         tflite.close();

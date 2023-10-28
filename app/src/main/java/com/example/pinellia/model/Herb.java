@@ -25,6 +25,8 @@ public class Herb implements Serializable {
     private String prohibition;
     private String imageLink;
 
+    private List<String> symptomsList;
+
     public Herb() {
         // Required empty constructor
     }
@@ -125,5 +127,13 @@ public class Herb implements Serializable {
 
     public String getImageLink() {
         return imageLink;
+    }
+
+    public List<String> getSymptomsList() {
+        return symptomsList;
+    }
+
+    public void setSymptomsList(List<String> symptomsList) {
+        this.symptomsList = symptomsList;
     }
 }

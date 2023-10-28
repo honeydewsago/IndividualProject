@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    tools:context=".ui.SettingsActivity">
+
+    <TextView
+        android:id="@+id/textStorage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Storage Management"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/dark_black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/imageViewHerb"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="8dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_green_gradient"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textViewImageData"
+        app:shapeAppearance="@style/roundedImageView" />
+
+    <TextView
+        android:id="@+id/textViewImageData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Image Data"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/textStorage"
+        app:layout_constraintTop_toBottomOf="@+id/textStorage" />
+
+    <TextView
+        android:id="@+id/textViewImageDataSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="00 MB"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewHerb"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewHerb"
+        app:layout_constraintStart_toStartOf="@+id/imageViewHerb"
+        app:layout_constraintTop_toTopOf="@+id/imageViewHerb" />
+
+    <Button
+        android:id="@+id/buttonClearCache"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Clear Image Cache"
+        android:textSize="14sp"
+        android:drawableLeft="@drawable/baseline_delete_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageViewHerb" />
+
+    <View
+        android:id="@+id/viewLine1"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="32dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintTop_toBottomOf="@+id/buttonClearCache"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <TextView
+        android:id="@+id/textContactSupport"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Contact Support"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/dark_black"
+        app:layout_constraintEnd_toEndOf="@+id/textStorage"
+        app:layout_constraintStart_toStartOf="@+id/textViewImageData"
+        app:layout_constraintTop_toBottomOf="@+id/viewLine1" />
+
+    <TextView
+        android:id="@+id/textViewSupportInstruction"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Feel free to reach out to us via email at:"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/textContactSupport"
+        app:layout_constraintStart_toStartOf="@+id/textContactSupport"
+        app:layout_constraintTop_toBottomOf="@+id/textContactSupport" />
+
+    <TextView
+        android:id="@+id/textViewSupportEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="support@pinellia.com"
+        android:textColor="@color/green_medium_dark"
+        android:textSize="18sp"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="@+id/textViewSupportInstruction"
+        app:layout_constraintStart_toStartOf="@+id/textContactSupport"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSupportInstruction" />
+
+    <View
+        android:id="@+id/viewLine2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="32dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintTop_toBottomOf="@+id/textViewSupportEmail"
+        tools:layout_editor_absoluteX="16dp" />
+
+    <TextView
+        android:id="@+id/textAppVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="App Version"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/dark_black"
+        app:layout_constraintStart_toStartOf="@+id/textViewSupportInstruction"
+        app:layout_constraintTop_toBottomOf="@+id/viewLine2" />
+
+    <TextView
+        android:id="@+id/textVersion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="1.0.0"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="@+id/textAppVersion"
+        app:layout_constraintTop_toBottomOf="@+id/textAppVersion" />
+
+    <ProgressBar
+        android:id="@+id/progressBarClearCache"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminateTint="@color/white"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewHerb"
+        app:layout_constraintEnd_toEndOf="@+id/imageViewHerb"
+        app:layout_constraintStart_toStartOf="@+id/imageViewHerb"
+        app:layout_constraintTop_toTopOf="@+id/imageViewHerb" />
+</androidx.constraintlayout.widget.ConstraintLayout>

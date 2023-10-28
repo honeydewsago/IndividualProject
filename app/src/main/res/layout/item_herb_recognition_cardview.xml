@@ -8,8 +8,8 @@
     android:background="@drawable/white_box_bg"
     android:elevation="8dp"
     android:orientation="vertical"
-    android:layout_marginStart="12dp"
-    android:layout_marginEnd="12dp"
+    android:layout_marginStart="18dp"
+    android:layout_marginEnd="18dp"
     android:padding="12dp">
 
     <com.google.android.material.imageview.ShapeableImageView
@@ -17,9 +17,9 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="4dp"
         android:scaleType="centerCrop"
         android:src="@drawable/bg_green_gradient"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:shapeAppearance="@style/roundedImageView" />
@@ -29,34 +29,26 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
-        android:layout_marginEnd="2dp"
+        android:layout_marginEnd="16dp"
         android:text="Herb Name"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewHerb"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewArrow"
+        app:layout_constraintEnd_toStartOf="@+id/textViewAccuracy"
         app:layout_constraintStart_toEndOf="@+id/imageViewHerb"
         app:layout_constraintTop_toTopOf="@+id/imageViewHerb" />
 
-    <ImageView
-        android:id="@+id/imageViewArrow"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/baseline_keyboard_arrow_right_green_24"
+    <TextView
+        android:id="@+id/textViewAccuracy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="00.00%"
+        android:textColor="@color/green_medium_dark"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/textViewName"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/textViewName" />
 
-    <TextView
-        android:id="@+id/textViewSymptoms"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Symptom"
-        android:textSize="16sp"
-        android:textColor="@color/green_medium_dark"
-        android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@+id/imageViewArrow"
-        app:layout_constraintStart_toStartOf="@+id/imageViewHerb"
-        app:layout_constraintTop_toBottomOf="@+id/imageViewHerb" />
 </androidx.constraintlayout.widget.ConstraintLayout>

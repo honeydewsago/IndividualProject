@@ -19,6 +19,7 @@ import com.example.pinellia.R;
 import com.example.pinellia.adapter.MeridianTropismAdapter;
 import com.example.pinellia.databinding.ActivityHerbDetailsBinding;
 import com.example.pinellia.model.Herb;
+import com.example.pinellia.viewmodel.HerbDetailsViewModel;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;

@@ -3,6 +3,7 @@ package com.example.pinellia.ui.selfCare;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,8 @@ import com.example.pinellia.databinding.ActivitySymptomBinding;
 import com.example.pinellia.model.Herb;
 import com.example.pinellia.model.HerbScore;
 import com.example.pinellia.model.SymptomScore;
+import com.example.pinellia.ui.BrowseHistoryActivity;
+import com.example.pinellia.ui.HerbDetailsActivity;
 import com.google.android.flexbox.FlexWrap;
 import com.google.android.flexbox.FlexboxLayoutManager;
 import com.google.android.flexbox.JustifyContent;
@@ -81,7 +84,19 @@ public class SymptomActivity extends AppCompatActivity{
         // Set up RecyclerView to display favorite herbs
         binding.recyclerViewSymRecommendation.setLayoutManager(new LinearLayoutManager(this));
         herbAdapter = new HerbAdapter(herbRecommendationList);
+        herbAdapter.setSymptomUsage("symptom");
         binding.recyclerViewSymRecommendation.setAdapter(herbAdapter);
+
+        // Handle click event for each herb item
+        herbAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Herb herb) {
+                // Launch HerbDetailsActivity activity and pass the clicked herb data
+                Intent intent = new Intent(SymptomActivity.this, HerbDetailsActivity.class);
+                intent.putExtra("herb", herb);
+                startActivity(intent);
+            }
+        });
 
         binding.textViewRecommendResults.setVisibility(View.INVISIBLE);
         binding.buttonSubmitSymptoms.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +111,7 @@ public class SymptomActivity extends AppCompatActivity{
                     int scrollTo = binding.textViewRecommendResults.getTop();
                     binding.scrollViewSymptomActivity.smoothScrollTo(0, scrollTo);
 
-                    herbScoreList = calculateHerbRecommendation(selectedSymptoms);
+                    herbScoreList = herbRecommendationCalculator.calculateHerbRecommendation(selectedSymptoms, symptomScoreList, herbNameList);
                     getHerbList(herbScoreList);
                 }
                 else {
@@ -117,6 +132,7 @@ public class SymptomActivity extends AppCompatActivity{
                     // Search for the corresponding herb in herbList
                     for (Herb herb : herbList) {
                         if (herb.getName().equals(herbName)) {
+                            herb.setSymptomsList(herbScore.getSymptoms());
                             herbRecommendationList.add(herb);
                             break; // Stop searching once found
                         }
@@ -132,86 +148,6 @@ public class SymptomActivity extends AppCompatActivity{
             }
         });
     }
-
-    private List<HerbScore> calculateHerbRecommendation(List<String> selectedSymptoms) {
-        List<String> actualSymptoms = getActualSymptoms(selectedSymptoms);
-        List<HerbScore> recommendationList = new ArrayList<>();
-
-        if (symptomScoreList != null && herbNameList != null) {
-            List<Double> summedScores = new ArrayList<>();
-
-            for (int i = 0; i < symptomScoreList.size(); i++) {
-                summedScores.add(0.0); // Initialize the sum for each herb to 0.0
-            }
-
-            for (String actualSymptom : actualSymptoms) {
-
-                for (int i = 0; i < symptomScoreList.size(); i++) {
-                    SymptomScore scores = symptomScoreList.get(i);
-                    String symptomName = scores.getSymptomName();
-                    List<Double> scoresList = scores.getScores();
-
-                    if (actualSymptom.equals(symptomName)) {
-                        // Sum the scores for the matching symptom
-                        for (int j = 0; j < 15; j++) {
-                            summedScores.set(j, summedScores.get(j) + scoresList.get(j));
-                        }
-                    }
-                }
-            }
-
-            // Create and associate HerbScore with herb names
-            for (int i = 0; i < 15; i++) {
-                if (summedScores.get(i) != 0) {
-                    List<String> relevantSymptoms = findRelevantSymptoms(herbNameList.get(i), actualSymptoms, symptomScoreList);
-                    HerbScore herbScore = new HerbScore(herbNameList.get(i), summedScores.get(i), relevantSymptoms);
-                    recommendationList.add(herbScore);
-                }
-            }
-
-            // Sort mHerbScoreList in descending order based on scores
-            Collections.sort(recommendationList, new Comparator<HerbScore>() {
-                @Override
-                public int compare(HerbScore herb1, HerbScore herb2) {
-                    return Double.compare(herb2.getScores(), herb1.getScores());
-                }
-            });
-
-            // Log the summed scores
-            StringBuilder logText = new StringBuilder("Summed Scores:\n");
-            for (HerbScore herbScore : recommendationList) {
-                logText.append(herbScore.getHerbName()).append(": ").append(herbScore.getScores()).append(" Relevant Symptoms: ");
-                for (String symptom : herbScore.getSymptoms()) {
-                    logText.append(symptom).append(", ");
-                }
-                logText.append("\n");
-            }
-            Log.d("SymptomActivity", logText.toString());
-        }
-
-        return recommendationList;
-    }
-
-    private List<String> findRelevantSymptoms(String herbName, List<String> userSymptoms, List<SymptomScore> symptomScoreList) {
-        List<String> relevantSymptoms = new ArrayList<>();
-
-        for (String symptom : userSymptoms) {
-            for (SymptomScore scores : symptomScoreList) {
-                String symptomName = scores.getSymptomName();
-                List<Double> scoresList = scores.getScores();
-
-                if (symptom.equals(symptomName)) {
-                    int herbIndex = herbNameList.indexOf(herbName);
-                    if (herbIndex >= 0 && scoresList.get(herbIndex) > 0) {
-                        relevantSymptoms.add(symptomName);
-                    }
-                }
-            }
-        }
-
-        return relevantSymptoms;
-    }
-
 
     private void fetchSymptomScores() {
         herbRecommendationCalculator.retrieveSymptomScores(new HerbRecommendationCalculator.SymptomScoresCallback() {
@@ -245,29 +181,7 @@ public class SymptomActivity extends AppCompatActivity{
         });
     }
 
-    private List<String> getActualSymptoms(List<String> selectedSymptoms) {
-        List<String> actualSymptoms = new ArrayList<>();
 
-        for (String symptom : selectedSymptoms) {
-            String lowercaseSymptom;
-
-            if (symptom.equals("High Blood Pressure")) {
-                lowercaseSymptom = "blood pressure";
-            } else if (symptom.equals("Menstruation Pain/Cramps")) {
-                lowercaseSymptom = "menstruation";
-            } else if (symptom.equals("Nose Bleed")) {
-                lowercaseSymptom = "epistaxis";
-            } else if (symptom.equals("Yin Deficiency")) {
-                lowercaseSymptom = "yin";
-            } else {
-                lowercaseSymptom = symptom.toLowerCase();
-            }
-
-            actualSymptoms.add(lowercaseSymptom);
-        }
-
-        return actualSymptoms;
-    }
     @Override
     public boolean onSupportNavigateUp() {
         // Handle the back button click in the action bar

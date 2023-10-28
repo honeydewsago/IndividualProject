@@ -11,6 +11,7 @@ import android.view.View;
 import com.example.pinellia.adapter.HerbAdapter;
 import com.example.pinellia.databinding.ActivityBrowseHistoryBinding;
 import com.example.pinellia.model.Herb;
+import com.example.pinellia.viewmodel.BrowseHistoryViewModel;
 
 import java.util.ArrayList;
 import java.util.List;

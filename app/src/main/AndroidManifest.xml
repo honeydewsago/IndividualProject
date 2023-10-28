@@ -19,6 +19,9 @@
         android:theme="@style/Theme.Pinellia"
         tools:targetApi="31">
         <activity
+            android:name=".ui.SettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.selfCare.UsageActivity"
             android:exported="false" />
         <activity
