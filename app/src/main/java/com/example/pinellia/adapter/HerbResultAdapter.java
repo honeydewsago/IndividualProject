@@ -86,8 +86,9 @@ public class HerbResultAdapter extends RecyclerView.Adapter<HerbResultAdapter.He
         public void bind(Pair<Herb, Float> herbResult) {
             binding.textViewName.setText(herbResult.first.getName());
 
-            // Format the probability to a percentage
-            double probability = herbResult.second * 100;
+            // Format the probability to a percentage (rounded to 2 decimal places)
+            double rawProbability = herbResult.second * 100;
+            double probability = Math.min(99.99, rawProbability); // Limit to 99.99% maximum
             binding.textViewAccuracy.setText(String.format("%.2f%%", probability));
 
             // Load the image from Firebase Storage using Glide
