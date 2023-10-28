@@ -84,6 +84,7 @@ public class SymptomActivity extends AppCompatActivity{
         // Set up RecyclerView to display favorite herbs
         binding.recyclerViewSymRecommendation.setLayoutManager(new LinearLayoutManager(this));
         herbAdapter = new HerbAdapter(herbRecommendationList);
+        herbAdapter.setSymptomUsage("symptom");
         binding.recyclerViewSymRecommendation.setAdapter(herbAdapter);
 
         // Handle click event for each herb item

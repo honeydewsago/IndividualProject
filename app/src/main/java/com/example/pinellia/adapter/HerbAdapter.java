@@ -20,6 +20,7 @@ import java.util.List;
 
 public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder> {
     private List<Herb> herbList;
+    private String symptomUsage;
     private OnItemClickListener itemClickListener;
 
     public HerbAdapter(List<Herb> herbList) {
@@ -31,6 +32,10 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
         herbList.clear();
         herbList.addAll(newHerbList);
         notifyDataSetChanged();
+    }
+
+    public void setSymptomUsage(String symptomUsage) {
+        this.symptomUsage = symptomUsage;
     }
 
     @NonNull
@@ -93,7 +98,15 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
             if (herb.getSymptomsList() != null) {
                 if (!herb.getSymptomsList().isEmpty()) {
                     binding.textViewSymptoms.setVisibility(View.VISIBLE);
-                    binding.textViewSymptoms.setText("Symptoms: " + TextUtils.join(", ", herb.getSymptomsList()));
+                    if (symptomUsage != null) {
+                        if (symptomUsage.equals("symptom")){
+                            binding.textViewSymptoms.setText("Symptoms: " + TextUtils.join(", ", herb.getSymptomsList()));
+                        }
+                        else {
+                            binding.textViewSymptoms.setText("Usage: " + TextUtils.join(", ", herb.getSymptomsList()));
+                        }
+                    }
+
                 }
             } else {
                 binding.textViewSymptoms.setVisibility(View.GONE);

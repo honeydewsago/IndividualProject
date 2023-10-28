@@ -72,6 +72,7 @@ public class UsageActivity extends AppCompatActivity {
         // Set up RecyclerView to display favorite herbs
         binding.recyclerViewUsgRecommendation.setLayoutManager(new LinearLayoutManager(this));
         herbAdapter = new HerbAdapter(herbRecommendationList);
+        herbAdapter.setSymptomUsage("usage");
         binding.recyclerViewUsgRecommendation.setAdapter(herbAdapter);
 
         // Handle click event for each herb item
