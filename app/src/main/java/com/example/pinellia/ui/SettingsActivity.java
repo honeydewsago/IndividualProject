@@ -102,7 +102,7 @@ public class SettingsActivity extends AppCompatActivity {
         // Convert dataSize to human-readable format (e.g., MB, GB)
         String dataSizeFormatted = formatSize(dataSize);
 
-        // Display the data size in your TextView
+        // Display the data size in TextView
         binding.textViewImageDataSize.setText(dataSizeFormatted);
     }
 

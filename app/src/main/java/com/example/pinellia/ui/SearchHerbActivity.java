@@ -55,7 +55,7 @@ public class SearchHerbActivity extends AppCompatActivity {
         searchResultsAdapter.setOnItemClickListener(new HerbAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Herb herb) {
-                // Handle item click in search results to launch HerbDetailsActivity activity
+                // Handle item click in search results to launch HerbDetails activity
                 Intent intent = new Intent(SearchHerbActivity.this, HerbDetailsActivity.class);
                 intent.putExtra("herb", herb);
                 startActivity(intent);

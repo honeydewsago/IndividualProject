@@ -22,6 +22,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BrowseHistoryViewModel extends ViewModel {
+
+    // LiveData for history herb IDs and history herb list
     private MutableLiveData<List<String>> historyHerbIdsLiveData = new MutableLiveData<>();
     private MutableLiveData<List<Herb>> historyHerbListLiveData = new MutableLiveData<>();
 
@@ -33,40 +35,46 @@ public class BrowseHistoryViewModel extends ViewModel {
         return historyHerbListLiveData;
     }
 
+    // Retrieve and set the history herb IDs from SharedPreferences
     public void retrieveHistoryHerbIds(SharedPreferences preferences, String keyHistory) {
         List<String> historyHerbIdsList = new ArrayList<>();
 
         String historyHerbsJson = preferences.getString(keyHistory, null);
 
         if (historyHerbsJson != null) {
+            // Deserialize the JSON string into a list of history herb IDs
             List<String> historyHerbIds = new Gson().fromJson(historyHerbsJson, new TypeToken<List<String>>() {}.getType());
             historyHerbIdsList.addAll(historyHerbIds);
         }
 
+        // Set the LiveData with the history herb IDs
         historyHerbIdsLiveData.setValue(historyHerbIdsList);
     }
 
+    // Fetch history herbs from Firebase
     public void fetchHistoryHerbs(List<String> historyHerbIds) {
         List<Herb> historyHerbList = new ArrayList<>();
 
         // Firebase reference
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("herbs");
 
-        // Iterate through history herb IDs and fetch corresponding herbs from Firebase
+        // Fetch corresponding herbs from Firebase
         for (String herbId : historyHerbIds) {
             databaseReference.child(herbId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Herb herb = dataSnapshot.getValue(Herb.class);
                     if (herb != null) {
+                        // Add the retrieved herb to the history herb list
                         historyHerbList.add(herb);
+                        // Set the LiveData with the updated history herb list
                         historyHerbListLiveData.setValue(historyHerbList);
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    // Handle error if needed
+                    // Handle error
                     Log.e("FetchHistory", "Database error: " + databaseError.getMessage());
                 }
             });

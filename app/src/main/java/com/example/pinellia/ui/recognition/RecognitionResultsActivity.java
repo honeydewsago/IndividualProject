@@ -79,6 +79,7 @@ public class RecognitionResultsActivity extends AppCompatActivity {
             }
         });
 
+        // Execute the background tasks for classification
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Handler handler = new Handler(Looper.getMainLooper());
 
@@ -121,8 +122,10 @@ public class RecognitionResultsActivity extends AppCompatActivity {
         // Resize and preprocess the image
         Bitmap resizedBitmap = Bitmap.createScaledBitmap(capturedBitmap, TFLiteModelExecutor.IMG_SIZE_X, TFLiteModelExecutor.IMG_SIZE_Y, true);
 
+        // Get the prediction results labels
         finalizedLabels = tfliteModelExecutor.runInference(resizedBitmap);
 
+        // Retrieve the predicted herbs from database
         tfliteModelExecutor.retrieveAllHerbs(new TFLiteModelExecutor.AllHerbsCallback() {
             @Override
             public void onAllHerbsRetrieved(List<Herb> herbList) {
@@ -179,10 +182,11 @@ public class RecognitionResultsActivity extends AppCompatActivity {
                 .placeholder(R.drawable.bg_light_green_gradient) // Placeholder while loading
                 .error(R.drawable.bg_light_green_gradient); // Error placeholder
 
+        // Load the herb image
         Glide.with(this)
                 .load("file://" + imagePath) // Load image from the file path
                 .apply(requestOptions)
-                .into(binding.imageViewCaptured); // Set the loaded image to your ImageView
+                .into(binding.imageViewCaptured);
     }
 
     @Override

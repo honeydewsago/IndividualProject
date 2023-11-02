@@ -26,7 +26,6 @@ import com.example.pinellia.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final int WIFI_PERMISSION_REQUEST_CODE = 1;
     private static final String PREFS_NAME = "AppPreferences";
     private ActivityMainBinding binding;
 
