@@ -31,7 +31,7 @@ public class HerbDetailsViewModel  extends ViewModel {
         boolean newFavoriteStatus = !isCurrentlyFavorite;
         isFavoriteLiveData.setValue(newFavoriteStatus);
 
-        // Display Toast message
+        // Display Toast message based on the new favorite status
         if (newFavoriteStatus) {
             toastMessageLiveData.setValue("Added to favorites");
         } else {
@@ -61,6 +61,7 @@ public class HerbDetailsViewModel  extends ViewModel {
         preferences.edit().putString(keyFavoriteHerbs, updatedFavoriteHerbsJson).apply();
     }
 
+    // Method to update the favorite button state based on whether the herb is in the favorites
     public void updateFavoriteButtonState(String herbId, SharedPreferences preferences,  String keyFavoriteHerbs) {
         String favoriteHerbsJson = preferences.getString(keyFavoriteHerbs, null);
 
@@ -89,6 +90,8 @@ public class HerbDetailsViewModel  extends ViewModel {
         historyHerbIds.add(0, herbId);
 
         String updatedHistoryHerbsJson = new Gson().toJson(historyHerbIds);
+
+        // Update the history herbId in shared preferences
         preferences.edit().putString(keyHistory, updatedHistoryHerbsJson).apply();
     }
 

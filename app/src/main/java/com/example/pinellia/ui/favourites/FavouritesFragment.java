@@ -154,7 +154,7 @@ public class FavouritesFragment extends Fragment {
             startActivity(intent);
             return true;
         } else if (id == R.id.action_acknowledge) {
-            // Handle Settings click
+            // Show user acknowledgement dialog
             showAlertDialog();
             return true;
         }else if (id == R.id.action_settings) {

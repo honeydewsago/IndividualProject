@@ -23,26 +23,31 @@ public class HomeViewModel extends ViewModel {
     private MutableLiveData<List<Herb>> herbLiveData;
     private MutableLiveData<String> errorMessageLiveData;
 
+    // LiveData to provide the list of herbs
     public LiveData<List<Herb>> getHerbData() {
         if (herbLiveData == null) {
             herbLiveData = new MutableLiveData<>();
             errorMessageLiveData = new MutableLiveData<>();
         }
 
+        // Load herbs from Firebase and update herbLiveData
         loadHerbsFromFirebase();
 
         return herbLiveData;
     }
 
+    // Load herbs data from Firebase
     private void loadHerbsFromFirebase() {
-        // Fetch herbs from Firebase and update herbLiveData
+        // Create a list to store herbs retrieved from Firebase
         List<Herb> herbList = new ArrayList<>();
 
+        // Fetch herb data from Firebase database
         FirebaseDatabase.getInstance().getReference("herbs").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 herbList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    // Retrieve herb object
                     Herb herb = snapshot.getValue(Herb.class);
                     herbList.add(herb);
                 }
@@ -55,6 +60,7 @@ public class HomeViewModel extends ViewModel {
                     }
                 });
 
+                // Update the LiveData with the sorted herbList
                 herbLiveData.setValue(herbList);
             }
 
@@ -66,6 +72,7 @@ public class HomeViewModel extends ViewModel {
         });
     }
 
+    // LiveData to provide error messages
     public LiveData<String> getErrorMessage() {
         return errorMessageLiveData;
     }

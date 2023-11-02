@@ -29,6 +29,7 @@ public class HerbRecommendationCalculator {
         herbDatabaseReference = database.getReference("herbs");
     }
 
+    // Calculate herb recommendations based on selected symptoms
     public List<HerbScore> calculateHerbRecommendation(List<String> selectedSymptoms, List<SymptomScore> symptomScoreList, List<String> herbNameList) {
         List<String> actualSymptoms = getActualSymptoms(selectedSymptoms);
         List<HerbScore> recommendationList = new ArrayList<>();
@@ -36,8 +37,9 @@ public class HerbRecommendationCalculator {
         if (symptomScoreList != null && herbNameList != null) {
             List<Double> summedScores = new ArrayList<>();
 
+            // Initialize the sum for each herb to 0.0
             for (int i = 0; i < symptomScoreList.size(); i++) {
-                summedScores.add(0.0); // Initialize the sum for each herb to 0.0
+                summedScores.add(0.0);
             }
 
             for (String actualSymptom : actualSymptoms) {
@@ -88,6 +90,7 @@ public class HerbRecommendationCalculator {
         return recommendationList;
     }
 
+    // Find relevant symptoms for a herb
     private List<String> findRelevantSymptoms(String herbName, List<String> actualSymptoms, List<String> userSymptoms, List<SymptomScore> symptomScoreList, List<String> herbNameList) {
         List<String> relevantSymptoms = new ArrayList<>();
 
@@ -109,6 +112,7 @@ public class HerbRecommendationCalculator {
         return relevantSymptoms;
     }
 
+    // Convert selected symptoms to their actual symptoms text
     private List<String> getActualSymptoms(List<String> selectedSymptoms) {
         List<String> actualSymptoms = new ArrayList<>();
 
@@ -143,6 +147,7 @@ public class HerbRecommendationCalculator {
         return actualSymptoms;
     }
 
+    // Retrieve symptom scores from Firebase Database
     public void retrieveSymptomScores(final SymptomScoresCallback callback) {
         tfidfDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -172,12 +177,14 @@ public class HerbRecommendationCalculator {
         });
     }
 
+    // Callback interface for retrieving symptom scores
     public interface SymptomScoresCallback {
         void onSymptomScoresRetrieved(List<SymptomScore> symptomScores);
 
         void onSymptomScoresError(Exception e);
     }
 
+    // Retrieve herb names from Firebase Database
     public void retrieveHerbNames(final HerbNamesCallback callback) {
         herbNameDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -199,12 +206,14 @@ public class HerbRecommendationCalculator {
         });
     }
 
+    // Callback interface for retrieving herb names
     public interface HerbNamesCallback {
         void onHerbNamesRetrieved(List<String> herbNames);
 
         void onHerbNamesError(Exception e);
     }
 
+    // Retrieve all herb data from Firebase Database
     public void retrieveAllHerbs(final AllHerbsCallback callback) {
         herbDatabaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -226,11 +235,10 @@ public class HerbRecommendationCalculator {
         });
     }
 
+    // Callback interface for retrieving all herb data
     public interface AllHerbsCallback {
         void onAllHerbsRetrieved(List<Herb> herbList);
 
         void onAllHerbsError(Exception e);
     }
-
-
 }

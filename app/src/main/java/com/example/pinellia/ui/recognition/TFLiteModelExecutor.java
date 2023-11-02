@@ -36,61 +36,102 @@ import java.util.PriorityQueue;
 
 public class TFLiteModelExecutor {
 
+    // Paths to the model and label files
     private static final String MODEL_PATH = "model8.tflite";
     private static final String LABEL_PATH = "labels.txt";
 
+    // TensorFlow Lite model interpreter
     private Interpreter tflite;
+
+    // List of labels
     private List<String> labelList;
+
+    // ByteBuffer for image data
     private ByteBuffer imageData = null;
+
+    // Number of top results to display
     private static final int RESULTS_TO_SHOW = 15;
+
+    // Inference batch size
     private static final int BATCH_SIZE = 1;
+
+    // Number of color channels (RGB)
     static final int PIXEL_SIZE = 3;
+
+    // Image width
     static final int IMG_SIZE_X = 224;
+    // Image height
     static final int IMG_SIZE_Y = 224;
+
+    // Mean value for preprocessing
     static final int IMG_MEAN = 224;
+    // Standard deviation for preprocessing
     static final float IMG_STD = 224.0f;
+
+    // Array to store image data
     private int[] intValues = new int[IMG_SIZE_X * IMG_SIZE_Y];
+
+    // Array to store label probabilities
     private float[][] labelProbArray = null;
 
     private List<Map.Entry<String, Float>> finalizedLabels = new ArrayList<>();
 
     public TFLiteModelExecutor(Activity activity) throws IOException {
+        // Create an instance of the TensorFlow Lite model interpreter
         tflite = new Interpreter(loadModelFile(activity));
+
+        // Load the list of labels
         labelList = loadLabelList(activity);
+
+        // Allocate memory for image data (4 bytes per pixel)
         imageData = ByteBuffer.allocateDirect(4 * BATCH_SIZE * IMG_SIZE_X * IMG_SIZE_Y * PIXEL_SIZE);
         imageData.order(ByteOrder.nativeOrder());
+
+        // Initialize the array to store label probabilities
         labelProbArray = new float[1][labelList.size()];
 
-        Log.d("tflite", "Created a TFLite Model with "+MODEL_PATH);
+        // Log a message to indicate the creation of the TFLite Model with the model path
+        Log.d("tflite", "Created a TFLite Model with " + MODEL_PATH);
     }
 
     private MappedByteBuffer loadModelFile(Activity activity) throws IOException {
+        // Load the model file from assets
         AssetFileDescriptor fileDescriptor = activity.getAssets().openFd(MODEL_PATH);
+
         FileInputStream inputStream = new FileInputStream(fileDescriptor.getFileDescriptor());
         FileChannel fileChannel = inputStream.getChannel();
+
         long startOffset = fileDescriptor.getStartOffset();
         long declaredLength = fileDescriptor.getDeclaredLength();
+
         return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength);
     }
 
     private List<String> loadLabelList(Activity activity) throws IOException {
+        // Read the labels from a label text file in assets
         List<String> labelList = new ArrayList<String>();
+
         BufferedReader reader =
                 new BufferedReader(new InputStreamReader(activity.getAssets().open(LABEL_PATH)));
         String line;
         while ((line = reader.readLine()) != null) {
             labelList.add(line);
         }
+
         reader.close();
+
         return labelList;
     }
 
+    // Run inference on the provided bitmap
     public List<Map.Entry<String, Float>> runInference(Bitmap bitmap) {
         if (tflite == null) {
             Log.e("tflite", "TFLite Model has not been initialized. Unable to run inference.");
         } else {
+            // Convert image bitmap to byte buffer
             convertBitmapToByteBuffer(bitmap);
 
+            // Record the prediction time
             long startTime = SystemClock.uptimeMillis();
             tflite.run(imageData, labelProbArray);
 
@@ -104,13 +145,15 @@ public class TFLiteModelExecutor {
         return finalizedLabels;
     }
 
+    // Convert a bitmap to a ByteBuffer
     private void convertBitmapToByteBuffer(Bitmap bitmap) {
         if (imageData == null) {
             return;
         }
         imageData.rewind();
         bitmap.getPixels(intValues, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-        // Convert the image to floating point.
+
+        // Convert the image to floating point and preprocess
         int pixel = 0;
         for (int i = 0; i < IMG_SIZE_X; ++i) {
             for (int j = 0; j < IMG_SIZE_Y; ++j) {
@@ -122,6 +165,7 @@ public class TFLiteModelExecutor {
         }
     }
 
+    // Finalize actual herb labels based on a mapping
     private List<Map.Entry<String, Float>> finalizeActualHerbLabels(List<Map.Entry<String, Float>> topKLabels) {
         List<Map.Entry<String, Float>> updatedLabels = new ArrayList<>();
 
@@ -159,10 +203,12 @@ public class TFLiteModelExecutor {
         return updatedLabels;
     }
 
+    // Get the top K labels
     private List<Map.Entry<String, Float>> getTopKLabels() {
         List<Map.Entry<String, Float>> topKLabels = new ArrayList<>();
 
         for (int i = 0; i < labelList.size(); ++i) {
+            // Sort the labels and probability results
             sortedLabels.add(
                     new AbstractMap.SimpleEntry<>(labelList.get(i), labelProbArray[0][i]));
             if (sortedLabels.size() > RESULTS_TO_SHOW) {
@@ -195,6 +241,7 @@ public class TFLiteModelExecutor {
                         }
                     });
 
+    // Retrieve all herb data from Firebase
     public void retrieveAllHerbs(final TFLiteModelExecutor.AllHerbsCallback callback) {
 
         DatabaseReference herbDatabaseReference = FirebaseDatabase.getInstance().getReference("herbs");
@@ -218,12 +265,14 @@ public class TFLiteModelExecutor {
         });
     }
 
+    // Callback interface for retrieving herb data
     public interface AllHerbsCallback {
         void onAllHerbsRetrieved(List<Herb> herbList);
 
         void onAllHerbsError(Exception e);
     }
 
+    // Close the TFLite interpreter
     public void close() {
         tflite.close();
         tflite = null;

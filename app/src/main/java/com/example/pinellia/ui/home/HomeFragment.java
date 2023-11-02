@@ -53,11 +53,13 @@ public class HomeFragment extends Fragment {
         binding.recyclerViewHerbs.setVisibility(View.GONE);
         binding.textViewNoHerbs.setVisibility(View.VISIBLE);
 
+        // Initialize the RecyclerView and data list
         binding.recyclerViewHerbs.setLayoutManager(new LinearLayoutManager(getActivity()));
         herbList = new ArrayList<>();
         herbAdapter = new HerbAdapter(herbList);
         binding.recyclerViewHerbs.setAdapter(herbAdapter);
 
+        // Observe changes in the herb data
         homeViewModel.getHerbData().observe(getViewLifecycleOwner(), herbs -> {
             // Update the RecyclerView when data changes
             herbAdapter.updateData(herbs);
@@ -75,6 +77,7 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // Observe and handle error messages
         homeViewModel.getErrorMessage().observe(getViewLifecycleOwner(), errorMessage -> {
             // Handle the error message
             Toast.makeText(getActivity(), "Failed to retrieve data: " + errorMessage, Toast.LENGTH_SHORT).show();
@@ -118,5 +121,4 @@ public class HomeFragment extends Fragment {
         binding.recyclerViewHerbs.setAdapter(null);
         herbAdapter = null;
     }
-
 }

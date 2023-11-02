@@ -24,14 +24,17 @@ public class SymptomAdapter extends RecyclerView.Adapter<SymptomAdapter.SymptomV
 
     public SymptomAdapter(List<String> symptomsList) {
         this.symptomsList = symptomsList;
+
+        // Initialize a list of boolean values to track selected items
         selectedItems = new ArrayList<>(Collections.nCopies(symptomsList.size(), false));
     }
 
-    // Add a method to get the selected items
+    // Method to get the selected items
     public List<String> getSelectedItems() {
         List<String> selectedSymptoms = new ArrayList<>();
         for (int i = 0; i < selectedItems.size(); i++) {
             if (selectedItems.get(i)) {
+                // Get the selected symptoms text
                 selectedSymptoms.add(symptomsList.get(i));
             }
         }

@@ -40,6 +40,7 @@ public class RecognitionFragment extends Fragment {
     private static final int IMAGE_PICK_REQUEST_CODE = 100;
     private FragmentRecognitionBinding binding;
 
+    // Request camera permission and start the camera
     private final ActivityResultLauncher<String> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), new ActivityResultCallback<Boolean>() {
         @Override
         public void onActivityResult(Boolean result) {
@@ -60,12 +61,14 @@ public class RecognitionFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        // Check for camera permission and start the camera
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             activityResultLauncher.launch(Manifest.permission.CAMERA);
         } else {
             startCamera();
         }
 
+        // Handle the Upload Image button click
         binding.uploadImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,6 +84,7 @@ public class RecognitionFragment extends Fragment {
         });
     }
 
+    // Launch an image picker to select an image from the gallery
     private void launchImagePicker() {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         startActivityForResult(intent, IMAGE_PICK_REQUEST_CODE);
@@ -102,6 +106,7 @@ public class RecognitionFragment extends Fragment {
         }
     }
 
+    // Get the real image path from the image URI
     private String getRealPathFromURI(Uri contentUri) {
         String[] projection = {MediaStore.Images.Media.DATA};
         Cursor cursor = requireContext().getContentResolver().query(contentUri, projection, null, null, null);
@@ -115,6 +120,7 @@ public class RecognitionFragment extends Fragment {
         return contentUri.getPath();
     }
 
+    // Start the camera with configuration
     public void startCamera() {
         int aspectRatio = aspectRatio(binding.cameraPreviewView.getWidth(), binding.cameraPreviewView.getHeight());
         ListenableFuture<ProcessCameraProvider> listenableFuture = ProcessCameraProvider.getInstance(requireContext());
@@ -123,17 +129,21 @@ public class RecognitionFragment extends Fragment {
             try {
                 ProcessCameraProvider cameraProvider = (ProcessCameraProvider) listenableFuture.get();
 
+                // Set up camera preview and image capture
                 Preview preview = new Preview.Builder().setTargetAspectRatio(aspectRatio).build();
 
                 ImageCapture imageCapture = new ImageCapture.Builder().setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
                         .setTargetRotation(requireActivity().getWindowManager().getDefaultDisplay().getRotation()).build();
 
+                // Camera selector
                 CameraSelector cameraSelector = new CameraSelector.Builder().build();
 
                 cameraProvider.unbindAll();
 
+                // Bind the camera to the view
                 Camera camera = cameraProvider.bindToLifecycle(requireActivity(), cameraSelector, preview, imageCapture);
 
+                // Handle the Capture button click
                 binding.captureButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -152,6 +162,7 @@ public class RecognitionFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
+    // Capture an image and handle the result
     public void takePicture(ImageCapture imageCapture) {
         final File file = new File(requireContext().getExternalFilesDir(null), System.currentTimeMillis() + ".jpg");
         ImageCapture.OutputFileOptions outputFileOptions = new ImageCapture.OutputFileOptions.Builder(file).build();
@@ -183,12 +194,14 @@ public class RecognitionFragment extends Fragment {
         });
     }
 
+    // Launch the Recognition Results Activity with the image path
     private void launchRecognitionResultsActivity(String imagePath) {
         Intent intent = new Intent(requireContext(), RecognitionResultsActivity.class);
         intent.putExtra("imagePath", imagePath);
         startActivity(intent);
     }
 
+    // Calculate the aspect ratio for camera preview
     private int aspectRatio(int width, int height) {
         double previewRatio = (double) Math.max(width, height) / Math.min(width, height);
         if (Math.abs(previewRatio - 4.0 / 3.0) <= Math.abs(previewRatio - 16.0 / 9.0)) {
@@ -201,6 +214,5 @@ public class RecognitionFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
-//        tfliteModelExecutor.close();
     }
 }
