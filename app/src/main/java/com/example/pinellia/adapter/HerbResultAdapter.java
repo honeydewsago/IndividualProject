@@ -84,6 +84,7 @@ public class HerbResultAdapter extends RecyclerView.Adapter<HerbResultAdapter.He
         }
 
         public void bind(Pair<Herb, Float> herbResult) {
+            // Display the herb name
             binding.textViewName.setText(herbResult.first.getName());
 
             // Format the probability to a percentage (rounded to 2 decimal places)
@@ -99,6 +100,7 @@ public class HerbResultAdapter extends RecyclerView.Adapter<HerbResultAdapter.He
                     .placeholder(R.drawable.white_box_bg) // Placeholder while loading
                     .error(R.drawable.white_box_bg); // Error placeholder
 
+            // Load the herb image using Glide
             Glide.with(binding.getRoot().getContext())
                     .load(imageLink)
                     .apply(requestOptions)

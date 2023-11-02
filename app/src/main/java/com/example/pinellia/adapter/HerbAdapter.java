@@ -99,16 +99,18 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
                 if (!herb.getSymptomsList().isEmpty()) {
                     binding.textViewSymptoms.setVisibility(View.VISIBLE);
                     if (symptomUsage != null) {
-                        if (symptomUsage.equals("symptom")){
+                        if (symptomUsage.equals("symptom")) {
+                            // Display symptoms text
                             binding.textViewSymptoms.setText("Symptoms: " + TextUtils.join(", ", herb.getSymptomsList()));
-                        }
-                        else {
+                        } else {
+                            // Display usage text
                             binding.textViewSymptoms.setText("Usage: " + TextUtils.join(", ", herb.getSymptomsList()));
                         }
                     }
 
                 }
             } else {
+                // Hide the symptoms/usage view if the list is empty
                 binding.textViewSymptoms.setVisibility(View.GONE);
             }
 
@@ -120,6 +122,7 @@ public class HerbAdapter extends RecyclerView.Adapter<HerbAdapter.HerbViewHolder
                     .placeholder(R.drawable.white_box_bg) // Placeholder while loading
                     .error(R.drawable.white_box_bg); // Error placeholder
 
+            // Load the herb image using Glide
             Glide.with(binding.getRoot().getContext())
                     .load(imageLink)
                     .apply(requestOptions)

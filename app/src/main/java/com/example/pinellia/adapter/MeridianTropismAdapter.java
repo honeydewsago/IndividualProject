@@ -30,6 +30,8 @@ public class MeridianTropismAdapter extends RecyclerView.Adapter<MeridianTropism
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         String meridianTropism = meridianTropismList.get(position);
+
+        // Display the herb meridian tropism
         holder.textViewMeridianTropism.setText(meridianTropism);
     }
 
@@ -46,6 +48,7 @@ public class MeridianTropismAdapter extends RecyclerView.Adapter<MeridianTropism
             super(binding.getRoot());
             this.binding = binding;
 
+            // Initialize the TextView for displaying meridian tropism
             textViewMeridianTropism = binding.tvMeridianFlavourItem;
         }
     }
