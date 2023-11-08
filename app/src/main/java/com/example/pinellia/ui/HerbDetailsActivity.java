@@ -54,93 +54,96 @@ public class HerbDetailsActivity extends AppCompatActivity {
 
         // Update the action bar title to the herb name
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle(mHerb.getName());
+            if (mHerb != null) {
+                getSupportActionBar().setTitle(mHerb.getName());
+            }
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
-        // Initialize herbId with the ID of the current herb
-        herbId = mHerb.getId();
+        if (mHerb != null) {
+            // Initialize herbId with the ID of the current herb
+            herbId = mHerb.getId();
 
-        herbDetailsViewModel.saveBrowseHistory(herbId, getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_HISTORY); // Save the herbId to history data
+            herbDetailsViewModel.saveBrowseHistory(herbId, getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_HISTORY); // Save the herbId to history data
 
-        // Load the image from Firebase Storage using Glide
-        String imageLink = mHerb.getImageLink();
+            // Load the image from Firebase Storage using Glide
+            String imageLink = mHerb.getImageLink();
 
-        RequestOptions requestOptions = new RequestOptions()
-                .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache image
-                .placeholder(R.drawable.bg_light_green_gradient) // Placeholder while loading
-                .error(R.drawable.bg_light_green_gradient); // Error placeholder
+            RequestOptions requestOptions = new RequestOptions()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL) // Cache image
+                    .placeholder(R.drawable.bg_light_green_gradient) // Placeholder while loading
+                    .error(R.drawable.bg_light_green_gradient); // Error placeholder
 
-        Glide.with(this)
-                .load(imageLink)
-                .apply(requestOptions)
-                .into(binding.imageViewHerb);
+            Glide.with(this)
+                    .load(imageLink)
+                    .apply(requestOptions)
+                    .into(binding.imageViewHerb);
 
-        // Display herb data
-        binding.textViewNameScientific.setText(mHerb.getNameScientific());
-        binding.textViewNameCN.setText(mHerb.getNameCN()+" "+mHerb.getNamePinyin());
-        binding.textViewStorage.setText(mHerb.getStorage());
-        binding.textViewCharacteristics.setText(mHerb.getCharacteristics());
-        binding.textViewPlaceOrigin.setText(mHerb.getPlaceOfOrigin());
-        binding.textViewMedicinePart.setText(mHerb.getMedicinePart());
-        binding.textViewMethod.setText(mHerb.getMethod());
-        binding.textViewEffect.setText(mHerb.getEffect());
-        binding.textViewUsage.setText(mHerb.getUsage());
-        binding.textViewDosage.setText(mHerb.getDosage());
-        binding.textViewProhibition.setText(mHerb.getProhibition());
+            // Display herb data
+            binding.textViewNameScientific.setText(mHerb.getNameScientific());
+            binding.textViewNameCN.setText(mHerb.getNameCN()+" "+mHerb.getNamePinyin());
+            binding.textViewStorage.setText(mHerb.getStorage());
+            binding.textViewCharacteristics.setText(mHerb.getCharacteristics());
+            binding.textViewPlaceOrigin.setText(mHerb.getPlaceOfOrigin());
+            binding.textViewMedicinePart.setText(mHerb.getMedicinePart());
+            binding.textViewMethod.setText(mHerb.getMethod());
+            binding.textViewEffect.setText(mHerb.getEffect());
+            binding.textViewUsage.setText(mHerb.getUsage());
+            binding.textViewDosage.setText(mHerb.getDosage());
+            binding.textViewProhibition.setText(mHerb.getProhibition());
 
-        // Display different box color for different herb property
-        Drawable backgroundDrawable = getBackgroundDrawableForProperty(mHerb.getProperty());
-        binding.herbPropertyLayout.setBackground(backgroundDrawable);
+            // Display different box color for different herb property
+            Drawable backgroundDrawable = getBackgroundDrawableForProperty(mHerb.getProperty());
+            binding.herbPropertyLayout.setBackground(backgroundDrawable);
 
-        // Initialize RecyclerView with FlexboxLayoutManager to display meridian tropism
-        FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
-        layoutManager.setFlexWrap(FlexWrap.WRAP); // Enable item wrapping
-        layoutManager.setJustifyContent(JustifyContent.FLEX_START); // Align items to the start of the container
+            // Initialize RecyclerView with FlexboxLayoutManager to display meridian tropism
+            FlexboxLayoutManager layoutManager = new FlexboxLayoutManager(this);
+            layoutManager.setFlexWrap(FlexWrap.WRAP); // Enable item wrapping
+            layoutManager.setJustifyContent(JustifyContent.FLEX_START); // Align items to the start of the container
 
-        binding.recyclerViewMeridianTropism.setLayoutManager(layoutManager);
+            binding.recyclerViewMeridianTropism.setLayoutManager(layoutManager);
 
-        // Create an adapter and set it to the RecyclerView
-        MeridianTropismAdapter adapter = new MeridianTropismAdapter(mHerb.getMeridianTropism());
-        binding.recyclerViewMeridianTropism.setAdapter(adapter);
+            // Create an adapter and set it to the RecyclerView
+            MeridianTropismAdapter adapter = new MeridianTropismAdapter(mHerb.getMeridianTropism());
+            binding.recyclerViewMeridianTropism.setAdapter(adapter);
 
 
-        // Initialize RecyclerView with new FlexboxLayoutManager to display herb flavour
-        FlexboxLayoutManager layoutManager2 = new FlexboxLayoutManager(this);
-        layoutManager2.setFlexWrap(FlexWrap.WRAP); // Enable item wrapping
-        layoutManager2.setJustifyContent(JustifyContent.FLEX_START); // Align items to the start of the container
+            // Initialize RecyclerView with new FlexboxLayoutManager to display herb flavour
+            FlexboxLayoutManager layoutManager2 = new FlexboxLayoutManager(this);
+            layoutManager2.setFlexWrap(FlexWrap.WRAP); // Enable item wrapping
+            layoutManager2.setJustifyContent(JustifyContent.FLEX_START); // Align items to the start of the container
 
-        binding.recyclerViewFlavour.setLayoutManager(layoutManager2);
+            binding.recyclerViewFlavour.setLayoutManager(layoutManager2);
 
-        // Create another meridian tropism adapter to display flavour and set it to the RecyclerView
-        MeridianTropismAdapter flavourAdapter = new MeridianTropismAdapter(mHerb.getFlavour());
-        binding.recyclerViewFlavour.setAdapter(flavourAdapter);
+            // Create another meridian tropism adapter to display flavour and set it to the RecyclerView
+            MeridianTropismAdapter flavourAdapter = new MeridianTropismAdapter(mHerb.getFlavour());
+            binding.recyclerViewFlavour.setAdapter(flavourAdapter);
 
-        binding.textViewProperty.setText(mHerb.getProperty());
+            binding.textViewProperty.setText(mHerb.getProperty());
 
-        // Display herb toxicology
-        if (mHerb.getToxicology().isEmpty()) {
-            binding.textViewToxicology.setText(R.string.not_identified);
-        }
-        else {
-            binding.textViewToxicology.setText(mHerb.getToxicology());
-        }
-
-        // Update isFavorite based on saved favorite herb IDs
-        herbDetailsViewModel.updateFavoriteButtonState(herbId, getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_FAVORITE_HERBS);
-
-        // Observe the isFavorite LiveData
-        herbDetailsViewModel.getIsFavoriteLiveData().observe(this, isFavorite -> {
-            this.isFavorite = isFavorite;
-            herbDetailsViewModel.saveFavoriteList(herbId, isFavorite, getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_FAVORITE_HERBS);
-        });
-
-        herbDetailsViewModel.getToastMessageLiveData().observe(this, message -> {
-            if (message != null && !message.isEmpty()) {
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            // Display herb toxicology
+            if (mHerb.getToxicology().isEmpty()) {
+                binding.textViewToxicology.setText(R.string.not_identified);
             }
-        });
+            else {
+                binding.textViewToxicology.setText(mHerb.getToxicology());
+            }
 
+            // Update isFavorite based on saved favorite herb IDs
+            herbDetailsViewModel.updateFavoriteButtonState(herbId, getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_FAVORITE_HERBS);
+
+            // Observe the isFavorite LiveData
+            herbDetailsViewModel.getIsFavoriteLiveData().observe(this, isFavorite -> {
+                this.isFavorite = isFavorite;
+                herbDetailsViewModel.saveFavoriteList(herbId, isFavorite, getSharedPreferences(PREFS_NAME, MODE_PRIVATE), KEY_FAVORITE_HERBS);
+            });
+
+            herbDetailsViewModel.getToastMessageLiveData().observe(this, message -> {
+                if (message != null && !message.isEmpty()) {
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void updateFavoriteMenuItemIcon(MenuItem menuItem) {
