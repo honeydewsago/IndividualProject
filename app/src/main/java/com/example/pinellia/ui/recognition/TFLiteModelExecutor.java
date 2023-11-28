@@ -37,7 +37,7 @@ import java.util.PriorityQueue;
 public class TFLiteModelExecutor {
 
     // Paths to the model and label files
-    private static final String MODEL_PATH = "model8.tflite";
+    private static final String MODEL_PATH = "mobilenetv2_model.tflite";
     private static final String LABEL_PATH = "labels.txt";
 
     // TensorFlow Lite model interpreter
@@ -173,8 +173,8 @@ public class TFLiteModelExecutor {
         Map<String, String> herbNameMapping = new HashMap<>();
         herbNameMapping.put("aiye", "Mugwort");
         herbNameMapping.put("baihe", "Lily Bulbs");
-        herbNameMapping.put("chongcao", "Codonopsis Root");
-        herbNameMapping.put("dangshen", "Cordyceps");
+        herbNameMapping.put("chongcao", "Cordyceps");
+        herbNameMapping.put("dangshen", "Codonopsis Root");
         herbNameMapping.put("fuling", "Poria Cocos");
         herbNameMapping.put("gancao", "Licorice");
         herbNameMapping.put("gouqi", "Wolfberry / Gojiberry");
